@@ -3,12 +3,14 @@ package com.ionut.ciuta.sci1hw.service;
 import com.ionut.ciuta.sci1hw.model.File;
 import com.ionut.ciuta.sci1hw.model.Folder;
 import com.ionut.ciuta.sci1hw.model.Resource;
+import org.springframework.stereotype.Component;
 
 /**
  * ionutciuta24@gmail.com on 26.10.2017.
  */
+@Component
 public class ResourceBuilder {
-    public static Resource build(String name, String content, String permission, int type) {
+    public Resource build(String name, String content, String permission, int type) {
         switch (type) {
             case Resource.Type.FILE:
                 return new File(content, permission, content);
