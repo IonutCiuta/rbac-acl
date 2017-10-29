@@ -1,7 +1,7 @@
 package com.ionut.ciuta.sci1hw.service;
 
 import com.ionut.ciuta.sci1hw.exception.ResourceNotFound;
-import com.ionut.ciuta.sci1hw.exception.ResourceOpertaionNotPermitted;
+import com.ionut.ciuta.sci1hw.exception.ResourceOperationNotPermitted;
 import com.ionut.ciuta.sci1hw.exception.UnauthorizedUser;
 import com.ionut.ciuta.sci1hw.model.File;
 import com.ionut.ciuta.sci1hw.model.Folder;
@@ -35,8 +35,28 @@ public class ResourceAccessService {
                     resource.permission.equals(Resource.Permission.RW)) {
                 return getContent(resource);
             } else {
-                throw new ResourceOpertaionNotPermitted();
+                throw new ResourceOperationNotPermitted();
             }
+        }
+    }
+
+    public void write(String user, String pass, String filename, String newContent) {
+        if(!authService.isAuthenticated(user, pass)) {
+            throw new UnauthorizedUser();
+        }
+
+        Resource resource = resourceService.find(filename);
+
+        if(resource == null || resource.type != Resource.Type.FILE) {
+            throw new ResourceNotFound();
+        }
+
+        File file = (File)resource;
+
+        if(file.owner.equals(user) || file.permission.contains(Resource.Permission.W)) {
+           file.content = newContent;
+        } else {
+            throw new ResourceOperationNotPermitted();
         }
     }
 
@@ -71,5 +91,23 @@ public class ResourceAccessService {
         });
 
         return sb.toString();
+    }
+
+    public void changeRights(String user, String pass, String name, String permissions) {
+        if(!authService.isAuthenticated(user, pass)) {
+            throw new UnauthorizedUser();
+        }
+
+        Resource resource = resourceService.find(name);
+
+        if(resource == null) {
+            throw new ResourceNotFound();
+        }
+
+        if(resource.owner.equals(user) || resource.permission.contains(Resource.Permission.W)) {
+            resource.permission = permissions;
+        } else {
+            throw new ResourceOperationNotPermitted();
+        }
     }
 }
