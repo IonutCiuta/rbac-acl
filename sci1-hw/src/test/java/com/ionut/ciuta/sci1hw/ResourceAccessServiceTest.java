@@ -6,7 +6,7 @@ import com.ionut.ciuta.sci1hw.exception.UnauthorizedUser;
 import com.ionut.ciuta.sci1hw.model.File;
 import com.ionut.ciuta.sci1hw.model.Folder;
 import com.ionut.ciuta.sci1hw.model.Resource;
-import com.ionut.ciuta.sci1hw.service.AccessService;
+import com.ionut.ciuta.sci1hw.service.ResourceAccessService;
 import com.ionut.ciuta.sci1hw.service.AuthService;
 import com.ionut.ciuta.sci1hw.service.ResourceService;
 import org.junit.Before;
@@ -28,7 +28,7 @@ public class ResourceAccessServiceTest {
     private final String userAliceFile = "file.alice";
 
     @InjectMocks
-    private AccessService resourceAccessService;
+    private ResourceAccessService resourceAccessService;
 
     @Mock
     private ResourceService resourceService;
@@ -101,24 +101,38 @@ public class ResourceAccessServiceTest {
     }
 
     @Test
-    public void readFolderShouldPassForReadPermissions() throws Exception {
+    public void readEmptyFolderShouldPassForReadPermissions() throws Exception {
         Folder folder = new Folder(userAlice, Resource.Permission.R, userAlice);
 
         when(authService.isAuthenticated(any(), any())).thenReturn(true);
         when(resourceService.find(any())).thenReturn(folder);
 
-        assertEquals(folder, resourceAccessService.read(userBob, userBobPass, userAlice));
+        assertEquals("", resourceAccessService.read(userBob, userBobPass, userAlice));
+    }
+
+    @Test
+    public void readFolderShouldPassForReadPermissions() throws Exception {
+        Folder folder = new Folder(userAlice, Resource.Permission.R, userAlice);
+        Folder subfolder = new Folder(userBob, Resource.Permission.R, userAlice);
+        File file = new File(userAliceFile, Resource.Permission.R, userAliceFile, userAlice);
+        folder.content.add(subfolder);
+        folder.content.add(file);
+
+        when(authService.isAuthenticated(any(), any())).thenReturn(true);
+        when(resourceService.find(any())).thenReturn(folder);
+
+        assertEquals(userBob.concat("/ ").concat(userAliceFile).concat(" "), resourceAccessService.read(userBob, userBobPass, userAlice));
     }
 
     @Test
     public void readFileShouldPassForReadPermissions() throws Exception {
         Folder folder = new Folder(userAlice, "", userAlice);
-        File file = new File(userAliceFile, Resource.Permission.R, "", userAlice);
+        File file = new File(userAliceFile, Resource.Permission.R, userAliceFile, userAlice);
         folder.content.add(file);
 
         when(authService.isAuthenticated(any(), any())).thenReturn(true);
         when(resourceService.find(any())).thenReturn(file);
 
-        assertEquals(file, resourceAccessService.read(userBob, userBobPass, userAlice));
+        assertEquals(file.content, resourceAccessService.read(userBob, userBobPass, userAlice));
     }
 }
