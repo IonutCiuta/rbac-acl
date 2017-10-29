@@ -19,11 +19,13 @@ public abstract class Resource {
     public String name;
     public int type;
     public String permission;
+    public String owner;
 
-    public Resource(String name, int type, String permission) {
+    public Resource(String name, int type, String permission, String owner) {
         this.name = name;
         this.type = type;
         this.permission = permission;
+        this.owner = owner;
     }
 
     public boolean isFolder() {

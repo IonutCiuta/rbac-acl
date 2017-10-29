@@ -2,7 +2,6 @@ package com.ionut.ciuta.sci1hw;
 
 import com.ionut.ciuta.sci1hw.model.File;
 import com.ionut.ciuta.sci1hw.model.Folder;
-import com.ionut.ciuta.sci1hw.model.Resource;
 import com.ionut.ciuta.sci1hw.service.ResourceBuilder;
 import com.ionut.ciuta.sci1hw.service.ResourceService;
 import com.ionut.ciuta.sci1hw.service.Storage;
@@ -57,14 +56,7 @@ public class ResourceServiceTest {
     public void existsShouldReturnFalseForEmptyResource() throws Exception {
         when(storage.getResource(user)).thenReturn(null);
 
-        assertFalse(resourceService.exists(user, name, 0));
-    }
-
-    @Test(expected = UnsupportedOperationException.class)
-    public void existsShouldThrowExceptionForUnknowType() throws Exception {
-        when(storage.getResource(user)).thenReturn(resource());
-
-        resourceService.exists(user, name, 2);
+        assertFalse(resourceService.exists(name));
     }
 
     @Test
@@ -74,7 +66,7 @@ public class ResourceServiceTest {
         rootFolder.content.add(childFolder);
 
         when(storage.getResource(user)).thenReturn(rootFolder);
-        assertTrue(resourceService.exists(user, String.join("/", root, folder), Resource.Type.FOLDER));
+        assertTrue(resourceService.exists(String.join("/", root, folder)));
     }
 
     @Test
@@ -84,7 +76,7 @@ public class ResourceServiceTest {
         rootFolder.content.add(childFolder);
 
         when(storage.getResource(user)).thenReturn(rootFolder);
-        assertFalse(resourceService.exists(user, String.join("/", root, folder), Resource.Type.FOLDER));
+        assertFalse(resourceService.exists(String.join("/", root, folder)));
     }
 
     @Test
@@ -95,7 +87,7 @@ public class ResourceServiceTest {
         childFolder.content.add(new File(file, "", content));
 
         when(storage.getResource(user)).thenReturn(rootFolder);
-        assertTrue(resourceService.exists(user, String.join("/", user, folder, file), Resource.Type.FILE));
+        assertTrue(resourceService.exists(String.join("/", user, folder, file)));
     }
 
     @Test
@@ -106,7 +98,7 @@ public class ResourceServiceTest {
         childFolder.content.add(new File("unknown", "", content));
 
         when(storage.getResource(user)).thenReturn(rootFolder);
-        assertFalse(resourceService.exists(user, String.join("/", user, folder, file), Resource.Type.FILE));
+        assertFalse(resourceService.exists(String.join("/", user, folder, file)));
     }
 
     @Test
@@ -117,7 +109,7 @@ public class ResourceServiceTest {
         childFolder.content.add(new File(file, "", content));
 
         when(storage.getResource(user)).thenReturn(rootFolder);
-        assertEquals(file, resourceService.find(user, String.join("/", user, folder, file), Resource.Type.FILE).name);
+        assertEquals(file, resourceService.find(String.join("/", user, folder, file)).name);
     }
 
     @Test
@@ -130,7 +122,7 @@ public class ResourceServiceTest {
         childFolder.content.add(new File("file2", "", content));
 
         when(storage.getResource(user)).thenReturn(rootFolder);
-        assertEquals(file, resourceService.find(user, String.join("/", user, folder, file), Resource.Type.FILE).name);
+        assertEquals(file, resourceService.find(String.join("/", user, folder, file)).name);
     }
 
     @Test
@@ -143,7 +135,7 @@ public class ResourceServiceTest {
         childFolder.content.add(fileResource);
 
         when(storage.getResource(user)).thenReturn(rootFolder);
-        assertEquals(file, resourceService.find(user, String.join("/", user, folder, file), Resource.Type.FILE).name);
+        assertEquals(file, resourceService.find(String.join("/", user, folder, file)).name);
     }
 
     @Test
@@ -154,7 +146,7 @@ public class ResourceServiceTest {
         childFolder.content.add(new File("unknown", "", content));
 
         when(storage.getResource(user)).thenReturn(rootFolder);
-        assertEquals(null, resourceService.find(user, String.join("/", user, folder, file), Resource.Type.FILE));
+        assertEquals(null, resourceService.find(String.join("/", user, folder, file)));
     }
 
     @Test
@@ -164,7 +156,7 @@ public class ResourceServiceTest {
         rootFolder.content.add(childFolder);
 
         when(storage.getResource(user)).thenReturn(rootFolder);
-        assertEquals(folder, resourceService.find(user, String.join("/", root, folder), Resource.Type.FOLDER).name);
+        assertEquals(folder, resourceService.find(String.join("/", root, folder)).name);
     }
 
     @Test
@@ -176,7 +168,7 @@ public class ResourceServiceTest {
         rootFolder.content.add(childFolder1);
 
         when(storage.getResource(user)).thenReturn(rootFolder);
-        assertEquals(folder, resourceService.find(user, String.join("/", root, folder), Resource.Type.FOLDER).name);
+        assertEquals(folder, resourceService.find(String.join("/", root, folder)).name);
     }
 
     @Test
@@ -186,17 +178,6 @@ public class ResourceServiceTest {
         rootFolder.content.add(childFolder);
 
         when(storage.getResource(user)).thenReturn(rootFolder);
-        assertEquals(null, resourceService.find(user, String.join("/", user, folder, file), Resource.Type.FOLDER));
-    }
-
-    private Resource resource() {
-        Folder root = new Folder("user", "");
-        Folder subfolder = new Folder("folder", "");
-        File file = new File("file.ext", "", "fileContent");
-
-        root.content.add(subfolder);
-        subfolder.content.add(file);
-
-        return root;
+        assertEquals(null, resourceService.find(String.join("/", user, folder, file)));
     }
 }

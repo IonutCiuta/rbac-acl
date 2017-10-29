@@ -19,25 +19,19 @@ public class ResourceService {
     @Autowired
     private Storage storage;
 
-    public boolean exists(String user, String name, int type) {
-        if(type != Resource.Type.FOLDER && type != Resource.Type.FILE) {
-            throw new UnsupportedOperationException();
-        }
-
-        Resource resource = storage.getResource(user);
-        return resource != null && findResource(getPath(name), resource, type) != null;
+    public boolean exists(String name) {
+        List<String> path = getPath(name);
+        Resource resource = storage.getResource(path.get(0));
+        return resource != null && findResource(path, resource) != null;
     }
 
-    public Resource find(String user, String name, int type) {
-        if(type != Resource.Type.FOLDER && type != Resource.Type.FILE) {
-            throw new UnsupportedOperationException();
-        }
-
-        Resource resource = storage.getResource(user);
-        return findResource(getPath(name), resource, type);
+    public Resource find(String name) {
+        List<String> path = getPath(name);
+        Resource resource = storage.getResource(path.get(0));
+        return findResource(path, resource);
     }
 
-    private Resource findResource(List<String> segments, Resource resource, int type)  {
+    private Resource findResource(List<String> segments, Resource resource)  {
         /* If there are no more segments to explore, the resource could not be found */
         if(segments.isEmpty()) {
             return null;
@@ -48,14 +42,14 @@ public class ResourceService {
 
         if(resource.isFolder()) {
             /* If it's the last folder and it has the correct name, then return it*/
-            if(segment.equals(resource.name) && type == Resource.Type.FOLDER && segments.isEmpty()) {
+            if(segment.equals(resource.name) && segments.isEmpty()) {
                     return resource;
             }
 
             /* Not all criteria were matched so we explore subfolders */
             List<Resource> results =
                     ((Folder) resource).content.stream()
-                            .map(r -> findResource(new ArrayList<>(segments), r, type))
+                            .map(r -> findResource(new ArrayList<>(segments), r))
                             .filter(Objects::nonNull)
                             .collect(Collectors.toList());
 
@@ -64,7 +58,7 @@ public class ResourceService {
 
         } else {
             /* If we search for a file and the name is a match, return it*/
-            if(segment.equals(resource.name) && type == Resource.Type.FILE) {
+            if(segment.equals(resource.name)) {
                 return resource;
             } else {
                 return null;

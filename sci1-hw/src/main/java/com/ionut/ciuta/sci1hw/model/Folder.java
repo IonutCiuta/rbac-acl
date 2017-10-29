@@ -9,7 +9,11 @@ import java.util.List;
 public class Folder extends Resource {
     public List<Resource> content = new ArrayList<>();
 
+    public Folder(String name, String permission, String owner) {
+        super(name, Type.FOLDER, permission, owner);
+    }
+
     public Folder(String name, String permission) {
-        super(name, Type.FOLDER, permission);
+        super(name, Type.FOLDER, permission, "");
     }
 }
