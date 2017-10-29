@@ -38,29 +38,37 @@ public class ResourceService {
     }
 
     private Resource findResource(List<String> segments, Resource resource, int type)  {
+        /* If there are no more segments to explore, the resource could not be found */
         if(segments.isEmpty()) {
             return null;
         }
 
+        /* Current segment */
         String segment = segments.remove(0);
-        if(segment.equals(resource.name) && resource.isOfType(type) ) {
-            return resource;
-        } else {
-            if(resource.isFolder()) {
-                List<Resource> results =
-                        ((Folder) resource).content.stream()
-                        .map(r -> findResource(new ArrayList<>(segments), r, type))
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
 
-                if(results.isEmpty()) {
-                    return null;
-                } else {
-                    return results.get(0);
-                }
+        if(resource.isFolder()) {
+            /* If it's the last folder and it has the correct name, then return it*/
+            if(segment.equals(resource.name) && type == Resource.Type.FOLDER && segments.isEmpty()) {
+                    return resource;
             }
 
-            return null;
+            /* Not all criteria were matched so we explore subfolders */
+            List<Resource> results =
+                    ((Folder) resource).content.stream()
+                            .map(r -> findResource(new ArrayList<>(segments), r, type))
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toList());
+
+            /* Return null is nothing matched the search */
+            return results.isEmpty() ? null : results.get(0);
+
+        } else {
+            /* If we search for a file and the name is a match, return it*/
+            if(segment.equals(resource.name) && type == Resource.Type.FILE) {
+                return resource;
+            } else {
+                return null;
+            }
         }
     }
 

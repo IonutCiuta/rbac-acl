@@ -121,14 +121,29 @@ public class ResourceServiceTest {
     }
 
     @Test
+    public void findShouldReturnCorrectFileWhenMultiplePresentInFolder() throws Exception {
+        Folder rootFolder = new Folder(user, "");
+        Folder childFolder = new Folder(folder, "");
+        rootFolder.content.add(childFolder);
+        childFolder.content.add(new File(file, "", content));
+        childFolder.content.add(new File("file1", "", content));
+        childFolder.content.add(new File("file2", "", content));
+
+        when(storage.getResource(user)).thenReturn(rootFolder);
+        assertEquals(file, resourceService.find(user, String.join("/", user, folder, file), Resource.Type.FILE).name);
+    }
+
+    @Test
     public void findShouldReturnFileFromCorrectFolder() throws Exception {
         Folder rootFolder = new Folder(user, "");
         Folder childFolder = new Folder(folder, "");
-        rootFolder.content.add(new File(file, "", content));
+        File fileResource = new File(file, "", content);
+        rootFolder.content.add(fileResource);
         rootFolder.content.add(childFolder);
+        childFolder.content.add(fileResource);
 
         when(storage.getResource(user)).thenReturn(rootFolder);
-        assertEquals(file, resourceService.find(user, String.join("/", user, file), Resource.Type.FILE).name);
+        assertEquals(file, resourceService.find(user, String.join("/", user, folder, file), Resource.Type.FILE).name);
     }
 
     @Test
@@ -147,6 +162,18 @@ public class ResourceServiceTest {
         Folder rootFolder = new Folder(root, "");
         Folder childFolder = new Folder(folder, "");
         rootFolder.content.add(childFolder);
+
+        when(storage.getResource(user)).thenReturn(rootFolder);
+        assertEquals(folder, resourceService.find(user, String.join("/", root, folder), Resource.Type.FOLDER).name);
+    }
+
+    @Test
+    public void findShouldReturnCorrectSubfolder() throws Exception {
+        Folder rootFolder = new Folder(root, "");
+        Folder childFolder1 = new Folder(folder, "");
+        Folder childFolder2 = new Folder("another", "");
+        rootFolder.content.add(childFolder2);
+        rootFolder.content.add(childFolder1);
 
         when(storage.getResource(user)).thenReturn(rootFolder);
         assertEquals(folder, resourceService.find(user, String.join("/", root, folder), Resource.Type.FOLDER).name);
