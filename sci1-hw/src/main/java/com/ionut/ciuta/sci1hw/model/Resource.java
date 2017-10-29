@@ -25,4 +25,16 @@ public abstract class Resource {
         this.type = type;
         this.permission = permission;
     }
+
+    public boolean isFolder() {
+        return this.type == Type.FOLDER;
+    }
+
+    public boolean isFile() {
+        return this.type == Type.FILE;
+    }
+
+    public boolean isOfType(int type) {
+        return this.type == type;
+    }
 }

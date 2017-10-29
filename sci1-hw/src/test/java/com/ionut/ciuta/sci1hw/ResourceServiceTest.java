@@ -3,19 +3,19 @@ package com.ionut.ciuta.sci1hw;
 import com.ionut.ciuta.sci1hw.model.File;
 import com.ionut.ciuta.sci1hw.model.Folder;
 import com.ionut.ciuta.sci1hw.model.Resource;
-import com.ionut.ciuta.sci1hw.service.AuthService;
 import com.ionut.ciuta.sci1hw.service.ResourceBuilder;
 import com.ionut.ciuta.sci1hw.service.ResourceService;
 import com.ionut.ciuta.sci1hw.service.Storage;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Collections;
-import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -54,33 +54,113 @@ public class ResourceServiceTest {
     }
 
     @Test
-    public void existsShouldReturnTrue() throws Exception {
-        Resource resource = resource();
-        when(storage.getResource(user)).thenReturn(resource);
-
-        assertTrue(resourceService.exists(user, name));
-    }
-
-    @Test
     public void existsShouldReturnFalseForEmptyResource() throws Exception {
         when(storage.getResource(user)).thenReturn(null);
 
-        assertTrue(resourceService.exists(user, name));
+        assertFalse(resourceService.exists(user, name, 0));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void existsShouldThrowExceptionForUnknowType() throws Exception {
+        when(storage.getResource(user)).thenReturn(resource());
+
+        resourceService.exists(user, name, 2);
     }
 
     @Test
-    public void checkResourceShouldReturnTrueForRootFolder() throws Exception {
-        Folder root = new Folder(user, "");
-        when(storage.getResource(user)).thenReturn(root);
+    public void existsShouldReturnTrueForFolder() throws Exception {
+        Folder rootFolder = new Folder(root, "");
+        Folder childFolder = new Folder(folder, "");
+        rootFolder.content.add(childFolder);
 
-        assertTrue(resourceService.checkResource(Collections.singletonList(user), root));
+        when(storage.getResource(user)).thenReturn(rootFolder);
+        assertTrue(resourceService.exists(user, String.join("/", root, folder), Resource.Type.FOLDER));
     }
 
     @Test
-    public void checkResourceShouldReturnTrueForEmptyPath() throws Exception {
-       // assertTrue(resourceService.checkResource(Collections.emptyList(), null));
+    public void existsShouldReturnFalseForFolder() throws Exception {
+        Folder rootFolder = new Folder(root, "");
+        Folder childFolder = new Folder("unknown", "");
+        rootFolder.content.add(childFolder);
+
+        when(storage.getResource(user)).thenReturn(rootFolder);
+        assertFalse(resourceService.exists(user, String.join("/", root, folder), Resource.Type.FOLDER));
     }
 
+    @Test
+    public void existsShouldReturnTrueForFile() throws Exception {
+        Folder rootFolder = new Folder(user, "");
+        Folder childFolder = new Folder(folder, "");
+        rootFolder.content.add(childFolder);
+        childFolder.content.add(new File(file, "", content));
+
+        when(storage.getResource(user)).thenReturn(rootFolder);
+        assertTrue(resourceService.exists(user, String.join("/", user, folder, file), Resource.Type.FILE));
+    }
+
+    @Test
+    public void existsShouldReturnFalseForFile() throws Exception {
+        Folder rootFolder = new Folder(user, "");
+        Folder childFolder = new Folder(folder, "");
+        rootFolder.content.add(childFolder);
+        childFolder.content.add(new File("unknown", "", content));
+
+        when(storage.getResource(user)).thenReturn(rootFolder);
+        assertFalse(resourceService.exists(user, String.join("/", user, folder, file), Resource.Type.FILE));
+    }
+
+    @Test
+    public void findShouldReturnFile() throws Exception {
+        Folder rootFolder = new Folder(user, "");
+        Folder childFolder = new Folder(folder, "");
+        rootFolder.content.add(childFolder);
+        childFolder.content.add(new File(file, "", content));
+
+        when(storage.getResource(user)).thenReturn(rootFolder);
+        assertEquals(file, resourceService.find(user, String.join("/", user, folder, file), Resource.Type.FILE).name);
+    }
+
+    @Test
+    public void findShouldReturnFileFromCorrectFolder() throws Exception {
+        Folder rootFolder = new Folder(user, "");
+        Folder childFolder = new Folder(folder, "");
+        rootFolder.content.add(new File(file, "", content));
+        rootFolder.content.add(childFolder);
+
+        when(storage.getResource(user)).thenReturn(rootFolder);
+        assertEquals(file, resourceService.find(user, String.join("/", user, file), Resource.Type.FILE).name);
+    }
+
+    @Test
+    public void findShouldReturnNullWhenSearchingFile() throws Exception {
+        Folder rootFolder = new Folder(user, "");
+        Folder childFolder = new Folder(folder, "");
+        rootFolder.content.add(childFolder);
+        childFolder.content.add(new File("unknown", "", content));
+
+        when(storage.getResource(user)).thenReturn(rootFolder);
+        assertEquals(null, resourceService.find(user, String.join("/", user, folder, file), Resource.Type.FILE));
+    }
+
+    @Test
+    public void findShouldReturnFolder() throws Exception {
+        Folder rootFolder = new Folder(root, "");
+        Folder childFolder = new Folder(folder, "");
+        rootFolder.content.add(childFolder);
+
+        when(storage.getResource(user)).thenReturn(rootFolder);
+        assertEquals(folder, resourceService.find(user, String.join("/", root, folder), Resource.Type.FOLDER).name);
+    }
+
+    @Test
+    public void findShouldReturnNullWhenSearchingFolder() throws Exception {
+        Folder rootFolder = new Folder(user, "");
+        Folder childFolder = new Folder("unknown", "");
+        rootFolder.content.add(childFolder);
+
+        when(storage.getResource(user)).thenReturn(rootFolder);
+        assertEquals(null, resourceService.find(user, String.join("/", user, folder, file), Resource.Type.FOLDER));
+    }
 
     private Resource resource() {
         Folder root = new Folder("user", "");
