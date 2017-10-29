@@ -2,6 +2,7 @@ package com.ionut.ciuta.sci1hw.service;
 
 import com.ionut.ciuta.sci1hw.model.Folder;
 import com.ionut.ciuta.sci1hw.model.Resource;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -41,14 +42,16 @@ public class ResourceService {
             return null;
         }
 
-        String segment = segments.get(0);
-        if(segment.equals(resource.name) && type == resource.type ) {
-                return resource;
+        String segment = segments.remove(0);
+        if(segment.equals(resource.name) && resource.isOfType(type) ) {
+            return resource;
         } else {
-            if(resource.type == Resource.Type.FOLDER) {
-                List<Resource> results = ((Folder) resource).content.stream().map(
-                        r -> findResource(segments.subList(1, segments.size()), r, type)
-                ).filter(Objects::nonNull).collect(Collectors.toList());
+            if(resource.isFolder()) {
+                List<Resource> results =
+                        ((Folder) resource).content.stream()
+                        .map(r -> findResource(new ArrayList<>(segments), r, type))
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
 
                 if(results.isEmpty()) {
                     return null;
@@ -62,6 +65,6 @@ public class ResourceService {
     }
 
     public List<String> getPath(String name) {
-        return Arrays.asList(name.split("/"));
+        return new ArrayList<>(Arrays.asList(name.split("/")));
     }
 }
