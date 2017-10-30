@@ -1,5 +1,7 @@
 package com.ionut.ciuta.sci1hw.service;
 
+import com.ionut.ciuta.sci1hw.exception.ResourceInConflict;
+import com.ionut.ciuta.sci1hw.exception.ResourceOperationNotPermitted;
 import com.ionut.ciuta.sci1hw.model.Folder;
 import com.ionut.ciuta.sci1hw.model.Resource;
 import java.util.ArrayList;
@@ -18,6 +20,9 @@ public class ResourceService {
 
     @Autowired
     private Storage storage;
+
+    @Autowired
+    private ResourceBuilder resourceBuilder;
 
     public boolean exists(String name) {
         List<String> path = getPath(name);
@@ -66,7 +71,27 @@ public class ResourceService {
         }
     }
 
+
     public List<String> getPath(String name) {
         return new ArrayList<>(Arrays.asList(name.split("/")));
+    }
+
+    public void create(String user, String name, int type) {
+        List<String> path = getPath(name);
+        Resource resource = storage.getResource(path.get(0));
+        createResource(user, path, type, resource);
+    }
+
+    private void createResource(String user, List<String> path, int type, Resource data) {
+        if(!data.owner.equals(user) || !data.permission.contains(Resource.Permission.W)) {
+            throw new ResourceOperationNotPermitted();
+        }
+
+        String segment = path.remove(0);
+        if(path.isEmpty()) {
+            if(data.name.equals(segment)) {
+                throw new ResourceInConflict();
+            }
+        }
     }
 }

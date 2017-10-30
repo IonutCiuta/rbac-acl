@@ -1,7 +1,9 @@
 package com.ionut.ciuta.sci1hw;
 
+import com.ionut.ciuta.sci1hw.exception.ResourceOperationNotPermitted;
 import com.ionut.ciuta.sci1hw.model.File;
 import com.ionut.ciuta.sci1hw.model.Folder;
+import com.ionut.ciuta.sci1hw.model.Resource;
 import com.ionut.ciuta.sci1hw.service.ResourceBuilder;
 import com.ionut.ciuta.sci1hw.service.ResourceService;
 import com.ionut.ciuta.sci1hw.service.Storage;
@@ -16,6 +18,7 @@ import org.mockito.MockitoAnnotations;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 /**
@@ -179,5 +182,29 @@ public class ResourceServiceTest {
 
         when(storage.getResource(user)).thenReturn(rootFolder);
         assertEquals(null, resourceService.find(String.join("/", user, folder, file)));
+    }
+
+    @Test(expected = ResourceOperationNotPermitted.class)
+    public void createResourceShouldFailWhenNoWritePermission() throws Exception {
+        Folder rootFolder = new Folder(user, "", "");
+        when(storage.getResource(any())).thenReturn(rootFolder);
+
+        resourceService.create(user, file, 0);
+    }
+
+    @Test(expected = ResourceOperationNotPermitted.class)
+    public void createResourceShouldFailWhenAlreadyExists() throws Exception {
+        Folder rootFolder = new Folder(user, Resource.Permission.W, "");
+        when(storage.getResource(any())).thenReturn(rootFolder);
+
+        resourceService.create(user, user, 0);
+    }
+
+    @Test(expected = ResourceOperationNotPermitted.class)
+    public void createResourceShouldSucceedForCorrectPermissions() throws Exception {
+        Folder rootFolder = new Folder(user, Resource.Permission.W, "");
+        when(storage.getResource(any())).thenReturn(rootFolder);
+
+        resourceService.create(user, user, 0);
     }
 }
