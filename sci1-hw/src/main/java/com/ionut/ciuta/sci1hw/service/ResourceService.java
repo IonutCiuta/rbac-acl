@@ -91,6 +91,8 @@ public class ResourceService {
         if(path.isEmpty()) {
             if(data.name.equals(segment)) {
                 throw new ResourceInConflict();
+            } else {
+
             }
         }
     }
