@@ -5,6 +5,7 @@ import com.ionut.ciuta.sci1hw.exception.ResourceOperationNotPermitted;
 import com.ionut.ciuta.sci1hw.exception.UnauthorizedUser;
 import com.ionut.ciuta.sci1hw.model.File;
 import com.ionut.ciuta.sci1hw.model.Folder;
+import com.ionut.ciuta.sci1hw.model.InsertionPoint;
 import com.ionut.ciuta.sci1hw.model.Resource;
 import com.ionut.ciuta.sci1hw.service.AuthService;
 import com.ionut.ciuta.sci1hw.service.ResourceAccessService;
@@ -15,6 +16,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -225,5 +228,21 @@ public class ResourceAccessServiceTest {
 
         resourceAccessService.changeRights(userBob, userBobPass, userAliceFile, Resource.Permission.RW);
         assertEquals(userAliceFile, resourceAccessService.read(userBob, userBobPass, userAliceFile));
+    }
+
+    @Test
+    public void createShouldPassForTheRightPermissionsAndPropeNewFile() throws Exception {
+        Folder folder = new Folder("root", Resource.Permission.R, userBob);
+        Folder subfolder = new Folder("folder", Resource.Permission.R, userBob);
+
+        InsertionPoint insertionPoint = new InsertionPoint(subfolder, Collections.singletonList("newFile"));
+        when(authService.isAuthenticated(any(), any())).thenReturn(true);
+        when(resourceService.exists(any())).thenReturn(false);
+        when(resourceService.find(any())).thenReturn(folder);
+        when(resourceService.findParent(any(), any())).thenReturn(insertionPoint);
+        when(resourceService.createResourceFromPath(any(), any(), any(), any())).thenReturn(subfolder);
+
+        resourceAccessService.create(userBob, userBobPass, "newFile", "newFileContent", "rw");
+        assertEquals("newFileContent", resourceAccessService.read(userBob, userBobPass, "newFile"));
     }
 }

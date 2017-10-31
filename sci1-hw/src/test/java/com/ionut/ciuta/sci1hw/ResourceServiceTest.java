@@ -240,17 +240,18 @@ public class ResourceServiceTest {
     public void createResourceFromPathShouldReturnValidResource() throws Exception {
         List<String> path = Arrays.asList(user, folder, file);
 
-        Folder result = (Folder) resourceService.createResourceFromPath(path, 1, "", "");
+        Folder result = (Folder) resourceService.createResourceFromPath(path, content, "", "");
         assertEquals(user, result.name);
         assertEquals(folder, result.content.get(0).name);
         assertEquals(file, ((Folder)result.content.get(0)).content.get(0).name);
+        assertEquals(content, ((File)((Folder)result.content.get(0)).content.get(0)).content);
     }
 
     @Test
     public void createResourceFromSingleFolderPathShouldReturnValidResource() throws Exception {
         List<String> path = Arrays.asList(user);
 
-        Folder result = (Folder) resourceService.createResourceFromPath(path, 0, "", "");
+        Folder result = (Folder) resourceService.createResourceFromPath(path, null, "", "");
         assertEquals(user, result.name);
     }
 
@@ -258,7 +259,7 @@ public class ResourceServiceTest {
     public void createResourceFromDoubleFolderPathShouldReturnValidResource() throws Exception {
         List<String> path = Arrays.asList(user, user);
 
-        Folder result = (Folder) resourceService.createResourceFromPath(path, 0, "", "");
+        Folder result = (Folder) resourceService.createResourceFromPath(path, null, "", "");
         assertEquals(user, result.name);
         assertEquals(user, result.content.get(0).name);
     }

@@ -1,10 +1,12 @@
 package com.ionut.ciuta.sci1hw.service;
 
+import com.ionut.ciuta.sci1hw.exception.ResourceInConflict;
 import com.ionut.ciuta.sci1hw.exception.ResourceNotFound;
 import com.ionut.ciuta.sci1hw.exception.ResourceOperationNotPermitted;
 import com.ionut.ciuta.sci1hw.exception.UnauthorizedUser;
 import com.ionut.ciuta.sci1hw.model.File;
 import com.ionut.ciuta.sci1hw.model.Folder;
+import com.ionut.ciuta.sci1hw.model.InsertionPoint;
 import com.ionut.ciuta.sci1hw.model.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -108,6 +110,31 @@ public class ResourceAccessService {
             resource.permission = permissions;
         } else {
             throw new ResourceOperationNotPermitted();
+        }
+    }
+
+    public void create(String user, String pass, String name, String content, String rights) {
+        if(!authService.isAuthenticated(user, pass)) {
+            throw new UnauthorizedUser();
+        }
+
+        Resource resource = resourceService.find(name);
+
+        if(resource == null) {
+            throw new ResourceNotFound();
+        }
+
+        if(resourceService.exists(name)) {
+            throw new ResourceInConflict();
+        } else {
+            InsertionPoint insertionPoint = resourceService.findParent(name, resource);
+            Resource newNode = resourceService.createResourceFromPath(
+                    insertionPoint.chain,
+                    content,
+                    rights.isEmpty() ? insertionPoint.hook.permission : rights,
+                    user
+            );
+            insertionPoint.hook.content.add(newNode);
         }
     }
 }

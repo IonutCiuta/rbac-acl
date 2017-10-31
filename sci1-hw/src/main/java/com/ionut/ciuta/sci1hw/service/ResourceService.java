@@ -106,9 +106,10 @@ public class ResourceService {
         return new InsertionPoint(parent, segments.subList(i, segments.size()));
     }
 
-    public Resource createResourceFromPath(List<String> path, int type, String rights, String owner) {
+    public Resource createResourceFromPath(List<String> path, String content, String rights, String owner) {
         Resource hook = null;
         Resource resource = null;
+        int type = content == null ? Resource.Type.FOLDER : Resource.Type.FILE;
 
         if(path.isEmpty()) {
             return null;
@@ -134,7 +135,7 @@ public class ResourceService {
         if(type == Resource.Type.FOLDER) {
              newResource = new Folder(path.get(i), rights, owner);
         } else {
-            newResource = new File(path.get(i), rights, owner);
+            newResource = new File(path.get(i), rights, content, owner);
         }
 
         if(hook == null) {
