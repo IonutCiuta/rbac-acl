@@ -13,19 +13,18 @@ import org.springframework.web.bind.annotation.*;
  * ionutciuta24@gmail.com on 26.10.2017.
  */
 @Controller
-@RequestMapping("sci/hw/resource/")
 public class ResourceController {
     private static final Logger log = LoggerFactory.getLogger(ResourceController.class);
 
     @Autowired
     private ResourceAccessService resourceAccessService;
 
-    @GetMapping("/home")
+    @GetMapping("/app")
     public String home() {
         return "home.html";
     }
 
-    @PostMapping("{user}/create")
+    @PostMapping("sci/hw/resource/{user}/create")
     @ResponseBody
     public ResponseEntity<Void> createResource(@PathVariable String user,
                                                @RequestBody String pass,
@@ -35,7 +34,7 @@ public class ResourceController {
         return null;
     }
 
-    @PostMapping("{user}/read")
+    @PostMapping("sci/hw/resource/{user}/read")
     @ResponseBody
     public ResponseEntity<String> readResource(@PathVariable String user,
                                                @RequestBody String pass,
@@ -50,7 +49,7 @@ public class ResourceController {
         }
     }
 
-    @PostMapping("{user}/write")
+    @PostMapping("sci/hw/resource/{user}/write")
     @ResponseBody
     public ResponseEntity<Void> writeResource(@PathVariable String user,
                                               @RequestBody String pass,
@@ -67,7 +66,7 @@ public class ResourceController {
         }
     }
 
-    @PostMapping("{user}/rights")
+    @PostMapping("sci/hw/resource/{user}/rights")
     @ResponseBody
     public ResponseEntity<Void> changeRights(@PathVariable String user,
                                              @RequestBody String pass,
