@@ -3,10 +3,13 @@ package com.ionut.ciuta.sci1hw;
 import com.ionut.ciuta.sci1hw.exception.ResourceOperationNotPermitted;
 import com.ionut.ciuta.sci1hw.model.File;
 import com.ionut.ciuta.sci1hw.model.Folder;
+import com.ionut.ciuta.sci1hw.model.InsertionPoint;
 import com.ionut.ciuta.sci1hw.model.Resource;
 import com.ionut.ciuta.sci1hw.service.ResourceBuilder;
 import com.ionut.ciuta.sci1hw.service.ResourceService;
 import com.ionut.ciuta.sci1hw.service.Storage;
+
+import java.util.Arrays;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
@@ -184,7 +187,7 @@ public class ResourceServiceTest {
         assertEquals(null, resourceService.find(String.join("/", user, folder, file)));
     }
 
-    @Test(expected = ResourceOperationNotPermitted.class)
+/*    @Test(expected = ResourceOperationNotPermitted.class)
     public void createResourceShouldFailWhenNoWritePermission() throws Exception {
         Folder rootFolder = new Folder(user, "", "");
         when(storage.getResource(any())).thenReturn(rootFolder);
@@ -206,5 +209,57 @@ public class ResourceServiceTest {
         when(storage.getResource(any())).thenReturn(rootFolder);
 
         resourceService.create(user, user, 0);
+    }*/
+
+    @Test
+    public void findParentShouldReturnParentFolder() throws Exception {
+        Folder rootFolder = new Folder(user, Resource.Permission.RW, user);
+        Folder childFolder = new Folder(folder, Resource.Permission.RW, user);
+        rootFolder.content.add(childFolder);
+
+        InsertionPoint insertionPoint = resourceService.findParent(name, rootFolder);
+        assertEquals(childFolder.name, insertionPoint.hook.name);
+        assertEquals(1, insertionPoint.chain.size());
+        assertEquals(file, insertionPoint.chain.get(0));
+    }
+
+    @Test
+    public void findParentShouldSecondParentFolder() throws Exception {
+        Folder rootFolder = new Folder(user, Resource.Permission.RW, user);
+        Folder childFolder = new Folder(user, Resource.Permission.RW, user);
+        rootFolder.content.add(childFolder);
+
+        InsertionPoint insertionPoint = resourceService.findParent("user/user/test/file", rootFolder);
+        assertEquals(childFolder.name, insertionPoint.hook.name);
+        assertEquals(2, insertionPoint.chain.size());
+        assertEquals("file", insertionPoint.chain.get(1));
+        assertEquals("test", insertionPoint.chain.get(0));
+    }
+
+    @Test
+    public void createResourceFromPathShouldReturnValidResource() throws Exception {
+        List<String> path = Arrays.asList(user, folder, file);
+
+        Folder result = (Folder) resourceService.createResourceFromPath(path, 1, "", "");
+        assertEquals(user, result.name);
+        assertEquals(folder, result.content.get(0).name);
+        assertEquals(file, ((Folder)result.content.get(0)).content.get(0).name);
+    }
+
+    @Test
+    public void createResourceFromSingleFolderPathShouldReturnValidResource() throws Exception {
+        List<String> path = Arrays.asList(user);
+
+        Folder result = (Folder) resourceService.createResourceFromPath(path, 0, "", "");
+        assertEquals(user, result.name);
+    }
+
+    @Test
+    public void createResourceFromDoubleFolderPathShouldReturnValidResource() throws Exception {
+        List<String> path = Arrays.asList(user, user);
+
+        Folder result = (Folder) resourceService.createResourceFromPath(path, 0, "", "");
+        assertEquals(user, result.name);
+        assertEquals(user, result.content.get(0).name);
     }
 }

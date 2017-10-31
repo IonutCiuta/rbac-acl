@@ -2,13 +2,16 @@ package com.ionut.ciuta.sci1hw.service;
 
 import com.ionut.ciuta.sci1hw.exception.ResourceInConflict;
 import com.ionut.ciuta.sci1hw.exception.ResourceOperationNotPermitted;
+import com.ionut.ciuta.sci1hw.model.File;
 import com.ionut.ciuta.sci1hw.model.Folder;
+import com.ionut.ciuta.sci1hw.model.InsertionPoint;
 import com.ionut.ciuta.sci1hw.model.Resource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+
+import java.util.*;
 import java.util.stream.Collectors;
+
+import com.sun.org.apache.regexp.internal.RE;
+import javafx.scene.Parent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -76,24 +79,70 @@ public class ResourceService {
         return new ArrayList<>(Arrays.asList(name.split("/")));
     }
 
-    public void create(String user, String name, int type) {
-        List<String> path = getPath(name);
-        Resource resource = storage.getResource(path.get(0));
-        createResource(user, path, type, resource);
-    }
+    public InsertionPoint findParent(String file, Resource rootFolder) {
+        List<String> segments = getPath(file);
+        List<Resource> resources = Collections.singletonList(rootFolder);
 
-    private void createResource(String user, List<String> path, int type, Resource data) {
-        if(!data.owner.equals(user) || !data.permission.contains(Resource.Permission.W)) {
-            throw new ResourceOperationNotPermitted();
-        }
+        Folder parent = null;
+        boolean match;
+        int i = 0;
 
-        String segment = path.remove(0);
-        if(path.isEmpty()) {
-            if(data.name.equals(segment)) {
-                throw new ResourceInConflict();
-            } else {
+        for(; i < segments.size(); i++) {
+            match = false;
+            for(Resource resource : resources) {
+                if(resource.name.equals(segments.get(i)) && resource.isFolder()) {
+                    parent = (Folder) resource;
+                    resources = parent.content;
+                    match = true;
+                    break;
+                }
+            }
 
+            if(!match) {
+                break;
             }
         }
+
+        return new InsertionPoint(parent, segments.subList(i, segments.size()));
+    }
+
+    public Resource createResourceFromPath(List<String> path, int type, String rights, String owner) {
+        Resource hook = null;
+        Resource resource = null;
+
+        if(path.isEmpty()) {
+            return null;
+        }
+
+        boolean withHook = false;
+        if(path.size() > 1) {
+            hook = new Folder(path.get(0), rights, owner);
+            resource = hook;
+            withHook = true;
+        }
+
+        int i = withHook? 1 : 0;
+        for(; i < path.size() - 1; i++) {
+            Folder newFolder = new Folder(path.get(i), rights, owner);
+            if(resource != null) {
+                ((Folder)resource).content.add(newFolder);
+             }
+            resource = newFolder;
+        }
+
+        Resource newResource;
+        if(type == Resource.Type.FOLDER) {
+             newResource = new Folder(path.get(i), rights, owner);
+        } else {
+            newResource = new File(path.get(i), rights, owner);
+        }
+
+        if(hook == null) {
+            hook = newResource;
+        } else {
+            ((Folder)resource).content.add(newResource);
+        }
+
+        return hook;
     }
 }
