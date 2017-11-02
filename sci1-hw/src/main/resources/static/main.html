@@ -23,7 +23,7 @@
                    id="password"
                    class="form-control"
                    placeholder="Password"
-                   ng-model="passwords">
+                   ng-model="password">
         </div>
 
         <div class="col-xs-2">
@@ -35,18 +35,18 @@
         </div>
 
         <div class="col-xs-2">
-            <select id="permission" class="form-control" ng-model="permission" ng-show="operation == 3">
-                <option ng-repeat="permission in rights" >{{permission}}</option>
+            <select id="type" class="form-control" ng-model="type" ng-show="operation == 0">
+                <option ng-repeat="type in types" value="{{type.value}}">{{type.text}}</option>
             </select>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-xs-2"></div>
+    <div class="row"></div>
 
+    <div class="row">
         <div class="col-xs-2">
-            <select id="type" class="form-control" ng-model="type" ng-show="operation == 3">
-                <option ng-repeat="type in types" value="{{type.value}}">{{type.text}}</option>
+            <select id="permission" class="form-control" ng-model="permission" ng-show="operation == 3">
+                <option ng-repeat="permission in rights" >{{permission}}</option>
             </select>
         </div>
 
@@ -55,13 +55,13 @@
                    id="value"
                    class="form-control"
                    placeholder="Content"
-                   ng-model="content" ng-show="operation == 0 && type == 1">
+                   ng-model="content" ng-show="(operation == 0 || operation == 2) && type == 1">
         </div>
     </div>
 
     <div class="row">
-        <div class="col-md-4">
-            <button type="button" class="btn btn-primary">Go</button>
+        <div class="col-md-8 center-block">
+            <button type="button" class="btn btn-success">Run</button>
         </div>
     </div>
 </div>
