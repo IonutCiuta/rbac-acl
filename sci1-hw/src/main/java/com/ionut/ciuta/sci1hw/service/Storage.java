@@ -1,5 +1,6 @@
 package com.ionut.ciuta.sci1hw.service;
 
+import com.ionut.ciuta.sci1hw.model.Folder;
 import com.ionut.ciuta.sci1hw.model.Resource;
 import org.springframework.stereotype.Component;
 
@@ -13,8 +14,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Component
 public class Storage {
-    private static Map<String, String> users = new ConcurrentHashMap<>();
-    private static Map<String, Resource> resources = new ConcurrentHashMap<>();
+    private Map<String, String> users = new ConcurrentHashMap<>();
+    private Map<String, Resource> resources = new ConcurrentHashMap<>();
 
     public boolean isUser(String user) {
         return users.containsKey(user);
@@ -42,5 +43,16 @@ public class Storage {
 
     public void addResource(String user, Resource resource) {
         resources.put(user, resource);
+    }
+
+    @PostConstruct
+    public void setupStorage() {
+        final String bob = "bob", alice = "alice";
+
+        users.put(bob, bob);
+        users.put(alice, alice);
+
+        resources.put(bob, new Folder(bob, Resource.Permission.RW, bob));
+        resources.put(alice, new Folder(alice, Resource.Permission.RW, alice));
     }
 }

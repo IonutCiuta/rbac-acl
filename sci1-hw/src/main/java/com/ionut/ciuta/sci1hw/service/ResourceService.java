@@ -1,6 +1,7 @@
 package com.ionut.ciuta.sci1hw.service;
 
 import com.ionut.ciuta.sci1hw.exception.ResourceInConflict;
+import com.ionut.ciuta.sci1hw.exception.ResourceNotFound;
 import com.ionut.ciuta.sci1hw.exception.ResourceOperationNotPermitted;
 import com.ionut.ciuta.sci1hw.model.File;
 import com.ionut.ciuta.sci1hw.model.Folder;
@@ -39,8 +40,17 @@ public class ResourceService {
         return findResource(path, resource);
     }
 
+    public Resource findRootForFile(String name) {
+        List<String> path = getPath(name);
+        return storage.getResource(path.get(0));
+    }
+
     private Resource findResource(List<String> segments, Resource resource)  {
         /* If there are no more segments to explore, the resource could not be found */
+        if(resource == null) {
+            throw new ResourceNotFound();
+        }
+
         if(segments.isEmpty()) {
             return null;
         }
@@ -109,41 +119,43 @@ public class ResourceService {
     public Resource createResourceFromPath(List<String> path, String content, String rights, String owner) {
         Resource hook = null;
         Resource resource = null;
-        int type = content == null ? Resource.Type.FOLDER : Resource.Type.FILE;
+        int type = (content == null || content.isEmpty()) ? Resource.Type.FOLDER : Resource.Type.FILE;
 
-        if(path.isEmpty()) {
+        if (path.isEmpty()) {
             return null;
         }
 
         boolean withHook = false;
-        if(path.size() > 1) {
+        if (path.size() > 1) {
             hook = new Folder(path.get(0), rights, owner);
             resource = hook;
             withHook = true;
         }
 
-        int i = withHook? 1 : 0;
-        for(; i < path.size() - 1; i++) {
+        int i = withHook ? 1 : 0;
+        for (; i < path.size() - 1; i++) {
             Folder newFolder = new Folder(path.get(i), rights, owner);
-            if(resource != null) {
-                ((Folder)resource).content.add(newFolder);
-             }
+            if (resource != null) {
+                ((Folder) resource).content.add(newFolder);
+            }
             resource = newFolder;
         }
 
         Resource newResource;
-        if(type == Resource.Type.FOLDER) {
-             newResource = new Folder(path.get(i), rights, owner);
+        if (type == Resource.Type.FOLDER) {
+            newResource = new Folder(path.get(i), rights, owner);
         } else {
             newResource = new File(path.get(i), rights, content, owner);
         }
 
-        if(hook == null) {
+        if (hook == null) {
             hook = newResource;
         } else {
-            ((Folder)resource).content.add(newResource);
+            ((Folder) resource).content.add(newResource);
         }
 
         return hook;
     }
+
+
 }

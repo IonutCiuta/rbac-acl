@@ -187,30 +187,6 @@ public class ResourceServiceTest {
         assertEquals(null, resourceService.find(String.join("/", user, folder, file)));
     }
 
-/*    @Test(expected = ResourceOperationNotPermitted.class)
-    public void createResourceShouldFailWhenNoWritePermission() throws Exception {
-        Folder rootFolder = new Folder(user, "", "");
-        when(storage.getResource(any())).thenReturn(rootFolder);
-
-        resourceService.create(user, file, 0);
-    }
-
-    @Test(expected = ResourceOperationNotPermitted.class)
-    public void createResourceShouldFailWhenAlreadyExists() throws Exception {
-        Folder rootFolder = new Folder(user, Resource.Permission.W, "");
-        when(storage.getResource(any())).thenReturn(rootFolder);
-
-        resourceService.create(user, user, 0);
-    }
-
-    @Test(expected = ResourceOperationNotPermitted.class)
-    public void createResourceShouldSucceedForCorrectPermissions() throws Exception {
-        Folder rootFolder = new Folder(user, Resource.Permission.W, "");
-        when(storage.getResource(any())).thenReturn(rootFolder);
-
-        resourceService.create(user, user, 0);
-    }*/
-
     @Test
     public void findParentShouldReturnParentFolder() throws Exception {
         Folder rootFolder = new Folder(user, Resource.Permission.RW, user);
@@ -263,4 +239,6 @@ public class ResourceServiceTest {
         assertEquals(user, result.name);
         assertEquals(user, result.content.get(0).name);
     }
+
+
 }

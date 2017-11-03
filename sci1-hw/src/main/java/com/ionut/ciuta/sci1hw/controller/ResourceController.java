@@ -33,7 +33,7 @@ public class ResourceController {
                                                   @RequestParam(required = false) String value,
                                                   @RequestParam Integer type) {
         try {
-            resourceAccessService.create(user, pass, name, value, type);
+            resourceAccessService.create(user, pass, name, value);
             return ResponseEntity.ok().build();
         } catch (ExceptionWithStatusCode e) {
             log.error(
@@ -46,8 +46,8 @@ public class ResourceController {
     @PostMapping("sci/hw/resource/{user}/read")
     @ResponseBody
     public ResponseEntity<Message> readResource(@PathVariable String user,
-                                               @RequestBody String pass,
-                                               @RequestParam String name) {
+                                                @RequestBody String pass,
+                                                @RequestParam String name) {
         try {
             return ResponseEntity.ok(new Message(resourceAccessService.read(user, pass, name)));
         } catch (ExceptionWithStatusCode e) {
@@ -61,9 +61,9 @@ public class ResourceController {
     @PostMapping("sci/hw/resource/{user}/write")
     @ResponseBody
     public ResponseEntity<Message> writeResource(@PathVariable String user,
-                                              @RequestBody String pass,
-                                              @RequestParam String name,
-                                              @RequestParam String value) {
+                                                 @RequestBody String pass,
+                                                 @RequestParam String name,
+                                                 @RequestParam String value) {
         try {
             resourceAccessService.write(user, pass, name, value);
             return ResponseEntity.ok().build();
@@ -78,9 +78,9 @@ public class ResourceController {
     @PostMapping("sci/hw/resource/{user}/rights")
     @ResponseBody
     public ResponseEntity<Message> changeRights(@PathVariable String user,
-                                             @RequestBody String pass,
-                                             @RequestParam String name,
-                                             @RequestParam String rights) {
+                                                @RequestBody String pass,
+                                                @RequestParam String name,
+                                                @RequestParam String rights) {
         try {
             resourceAccessService.changeRights(user, pass, name, rights);
             return ResponseEntity.ok().build();

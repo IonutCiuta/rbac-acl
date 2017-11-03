@@ -10,7 +10,7 @@ app.config(function ($routeProvider) {
 
 app.controller('AppController', ['$scope', '$http', function($scope, $http) {
     console.log('App controller initialized');
-
+    $scope.error = undefined;
     $scope.methods = [
         {'text': 'Create', 'value': 0},
         {'text': 'Read', 'value': 1},
@@ -21,6 +21,9 @@ app.controller('AppController', ['$scope', '$http', function($scope, $http) {
     $scope.types = [{'value': 0, 'text': 'Folder'}, {'value': 1, 'text': 'File'}];
 
     $scope.run = function() {
+        resetOutput();
+        sanitizeContent();
+
         var config = {
             headers: {
                 'Content-Type': 'application/json',
@@ -29,9 +32,13 @@ app.controller('AppController', ['$scope', '$http', function($scope, $http) {
 
         $http.post(getOperationPath(), $scope.password, {})
         .success(function(data, status) {
+            $scope.status = status;
+            $scope.result = data.text ? data.text : "Success";
             console.log(status + ": " + data.text)
         })
         .error(function(data, status) {
+            $scope.status = status;
+            $scope.error = data.text;
             console.error(status + ": " + data.text);
         });
     }
@@ -49,5 +56,17 @@ app.controller('AppController', ['$scope', '$http', function($scope, $http) {
         var url = root + path[$scope.operation] + params[$scope.operation];
         console.log("Url: " + url);
         return url;
+    }
+
+    function resetOutput() {
+        $scope.status = undefined;
+        $scope.error = undefined;
+        $scope.result = undefined;
+    }
+
+    function sanitizeContent() {
+        if($scope.type == 0) {
+            $scope.content = '';
+        }
     }
 }]);

@@ -113,12 +113,12 @@ public class ResourceAccessService {
         }
     }
 
-    public void create(String user, String pass, String name, String content, int type) {
+    public void create(String user, String pass, String name, String content) {
         if(!authService.isAuthenticated(user, pass)) {
             throw new UnauthorizedUser();
         }
 
-        Resource resource = resourceService.find(name);
+        Resource resource = resourceService.findRootForFile(name);
 
         if(resource == null) {
             throw new ResourceNotFound();
