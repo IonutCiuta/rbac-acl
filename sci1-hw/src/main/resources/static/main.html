@@ -38,13 +38,7 @@
             <select id="type" class="form-control" ng-model="type" ng-show="operation == 0">
                 <option ng-repeat="type in types" value="{{type.value}}">{{type.text}}</option>
             </select>
-        </div>
-    </div>
 
-    <div class="row"></div>
-
-    <div class="row">
-        <div class="col-xs-2">
             <select id="permission" class="form-control" ng-model="permission" ng-show="operation == 3">
                 <option ng-repeat="permission in rights" >{{permission}}</option>
             </select>
@@ -59,17 +53,21 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-8 center-block">
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-2 mx-auto">
             <button type="button" class="btn btn-success" ng-click="run()">Run</button>
         </div>
     </div>
 
-    <div class="row" ng-show="result">
-        <span class="label label-success">{{status}}</span> <p class="text-success">{{result}}</p>
+    <div class="row" style="margin-top:20px;" ng-show="result">
+        <div class="col-xs-2 mx-auto">
+            <span class="label label-success">{{status}}</span> <p class="text-success">{{result}}</p>
+        </div>
     </div>
 
-    <div class="row" ng-show="error">
-        <span class="label label-danger">{{status}}</span> <p class="text-danger">{{error}}</p>
+    <div class="row" style="margin-top:20px;" ng-show="error">
+        <div class="col-xs-2 mx-auto">
+            <span class="label label-danger">{{status}}</span> <p class="text-danger">{{error}}</p>
+        </div>
     </div>
 </div>
