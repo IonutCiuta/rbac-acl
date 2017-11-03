@@ -113,7 +113,7 @@ public class ResourceAccessService {
         }
     }
 
-    public void create(String user, String pass, String name, String content, String rights) {
+    public void create(String user, String pass, String name, String content, int type) {
         if(!authService.isAuthenticated(user, pass)) {
             throw new UnauthorizedUser();
         }
@@ -131,7 +131,7 @@ public class ResourceAccessService {
             Resource newNode = resourceService.createResourceFromPath(
                     insertionPoint.chain,
                     content,
-                    rights.isEmpty() ? insertionPoint.hook.permission : rights,
+                    insertionPoint.hook.permission,
                     user
             );
             insertionPoint.hook.content.add(newNode);

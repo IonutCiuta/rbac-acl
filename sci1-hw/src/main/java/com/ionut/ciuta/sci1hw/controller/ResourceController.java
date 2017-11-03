@@ -1,5 +1,6 @@
 package com.ionut.ciuta.sci1hw.controller;
 
+import com.ionut.ciuta.sci1hw.dto.Message;
 import com.ionut.ciuta.sci1hw.exception.ExceptionWithStatusCode;
 import com.ionut.ciuta.sci1hw.service.ResourceAccessService;
 import org.slf4j.Logger;
@@ -26,32 +27,40 @@ public class ResourceController {
 
     @PostMapping("sci/hw/resource/{user}/create")
     @ResponseBody
-    public ResponseEntity<Void> createResource(@PathVariable String user,
-                                               @RequestBody String pass,
-                                               @RequestParam String name,
-                                               @RequestParam(required = false) String value,
-                                               @RequestParam Integer type) {
-        return null;
+    public ResponseEntity<Message> createResource(@PathVariable String user,
+                                                  @RequestBody String pass,
+                                                  @RequestParam String name,
+                                                  @RequestParam(required = false) String value,
+                                                  @RequestParam Integer type) {
+        try {
+            resourceAccessService.create(user, pass, name, value, type);
+            return ResponseEntity.ok().build();
+        } catch (ExceptionWithStatusCode e) {
+            log.error(
+                    "writeResource failed with {} for {} {} {} {}",
+                    e.getClass().getSimpleName(), user, pass, name, value);
+            return new ResponseEntity<>(new Message(e.text), e.status);
+        }
     }
 
     @PostMapping("sci/hw/resource/{user}/read")
     @ResponseBody
-    public ResponseEntity<String> readResource(@PathVariable String user,
+    public ResponseEntity<Message> readResource(@PathVariable String user,
                                                @RequestBody String pass,
                                                @RequestParam String name) {
         try {
-            return ResponseEntity.ok(resourceAccessService.read(user, pass, name));
+            return ResponseEntity.ok(new Message(resourceAccessService.read(user, pass, name)));
         } catch (ExceptionWithStatusCode e) {
             log.error(
                     "readResource failed with {} for {} {} {}",
                     e.getClass().getSimpleName(), user, pass, name);
-            return new ResponseEntity<>(e.status);
+            return new ResponseEntity<>(new Message(e.text), e.status);
         }
     }
 
     @PostMapping("sci/hw/resource/{user}/write")
     @ResponseBody
-    public ResponseEntity<Void> writeResource(@PathVariable String user,
+    public ResponseEntity<Message> writeResource(@PathVariable String user,
                                               @RequestBody String pass,
                                               @RequestParam String name,
                                               @RequestParam String value) {
@@ -60,15 +69,15 @@ public class ResourceController {
             return ResponseEntity.ok().build();
         } catch (ExceptionWithStatusCode e) {
             log.error(
-                    "writeResource failed with {} for {} {} {}",
+                    "writeResource failed with {} for {} {} {} {}",
                     e.getClass().getSimpleName(), user, pass, name, value);
-            return new ResponseEntity<>(e.status);
+            return new ResponseEntity<>(new Message(e.text), e.status);
         }
     }
 
     @PostMapping("sci/hw/resource/{user}/rights")
     @ResponseBody
-    public ResponseEntity<Void> changeRights(@PathVariable String user,
+    public ResponseEntity<Message> changeRights(@PathVariable String user,
                                              @RequestBody String pass,
                                              @RequestParam String name,
                                              @RequestParam String rights) {
@@ -77,9 +86,9 @@ public class ResourceController {
             return ResponseEntity.ok().build();
         } catch (ExceptionWithStatusCode e) {
             log.error(
-                    "changeRights failed with {} for {} {} {} {}",
+                    "changeRights failed with {} for {} {} {} {} {}",
                     e.getClass().getSimpleName(), user, pass, name, rights);
-            return new ResponseEntity<>(e.status);
+            return new ResponseEntity<>(new Message(e.text), e.status);
         }
     }
 }

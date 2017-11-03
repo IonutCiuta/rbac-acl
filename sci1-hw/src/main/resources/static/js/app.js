@@ -8,7 +8,7 @@ app.config(function ($routeProvider) {
         })
 });
 
-app.controller('AppController', ['$scope', function($scope) {
+app.controller('AppController', ['$scope', '$http', function($scope, $http) {
     console.log('App controller initialized');
 
     $scope.methods = [
@@ -20,19 +20,34 @@ app.controller('AppController', ['$scope', function($scope) {
     $scope.rights = ['none', 'r', 'w', 'rw'];
     $scope.types = [{'value': 0, 'text': 'Folder'}, {'value': 1, 'text': 'File'}];
 
-    $scope.showContent = function(operation, type) {
-        console.log("showContent: " + operation + ", " + type);
-        return operation === 2 ||
-            (operation === 0 && type === 1);
-    };
+    $scope.run = function() {
+        var config = {
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
 
-    $scope.showRights = function(operation) {
-        console.log("showRights: " + operation);
-        return operation === 3;
-    };
+        $http.post(getOperationPath(), $scope.password, {})
+        .success(function(data, status) {
+            console.log(status + ": " + data.text)
+        })
+        .error(function(data, status) {
+            console.error(status + ": " + data.text);
+        });
+    }
 
-    $scope.showType = function(operation) {
-        console.log("shotType: " + operation);
-        return operation === 3;
-    };
+    function getOperationPath() {
+        var root = 'http://localhost:8080/sci/hw/resource/' + $scope.username;
+        var path = ['/create', '/read', '/write', '/rights'];
+        var params = [
+            '?name=' + $scope.name + '&type=' + $scope.type + '&value=' + ($scope.content ? $scope.content : ''),
+            '?name=' + $scope.name,
+            '?name=' + $scope.name + '&value=' + $scope.content,
+            '?name=' + $scope.name + '&rights=' + $scope.permission
+        ];
+
+        var url = root + path[$scope.operation] + params[$scope.operation];
+        console.log("Url: " + url);
+        return url;
+    }
 }]);

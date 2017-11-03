@@ -4,6 +4,6 @@ import org.springframework.http.HttpStatus;
 
 public class ResourceInConflict extends ExceptionWithStatusCode {
     public ResourceInConflict() {
-        super(HttpStatus.CONFLICT);
+        super(HttpStatus.CONFLICT, "Already Existing");
     }
 }

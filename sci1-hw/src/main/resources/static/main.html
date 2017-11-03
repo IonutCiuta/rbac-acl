@@ -55,13 +55,13 @@
                    id="value"
                    class="form-control"
                    placeholder="Content"
-                   ng-model="content" ng-show="(operation == 0 || operation == 2) && type == 1">
+                   ng-model="content" ng-show="operation == 0 || operation == 2>
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-8 center-block">
-            <button type="button" class="btn btn-success">Run</button>
+            <button type="button" class="btn btn-success" ng-click="run()">Run</button>
         </div>
     </div>
 </div>

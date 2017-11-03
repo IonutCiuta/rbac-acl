@@ -4,6 +4,6 @@ import org.springframework.http.HttpStatus;
 
 public class UnauthorizedUser extends ExceptionWithStatusCode {
     public UnauthorizedUser() {
-        super(HttpStatus.UNAUTHORIZED);
+        super(HttpStatus.UNAUTHORIZED, "Nonexisting User");
     }
 }

@@ -231,18 +231,19 @@ public class ResourceAccessServiceTest {
     }
 
     @Test
-    public void createShouldPassForTheRightPermissionsAndPropeNewFile() throws Exception {
-        Folder folder = new Folder("root", Resource.Permission.R, userBob);
-        Folder subfolder = new Folder("folder", Resource.Permission.R, userBob);
+    public void createShouldPassForTheRightPermissionsAndProperNewFile() throws Exception {
+        Folder folder = new Folder("root", Resource.Permission.RW, userBob);
+        Folder subfolder = new Folder("folder", Resource.Permission.RW, userBob);
+        folder.content.add(subfolder);
 
         InsertionPoint insertionPoint = new InsertionPoint(subfolder, Collections.singletonList("newFile"));
         when(authService.isAuthenticated(any(), any())).thenReturn(true);
         when(resourceService.exists(any())).thenReturn(false);
         when(resourceService.find(any())).thenReturn(folder);
         when(resourceService.findParent(any(), any())).thenReturn(insertionPoint);
-        when(resourceService.createResourceFromPath(any(), any(), any(), any())).thenReturn(subfolder);
+        when(resourceService.createResourceFromPath(any(), any(), any(), any())).thenReturn(new File("newFile", "", "newFileContent", userBob));
 
-        resourceAccessService.create(userBob, userBobPass, "newFile", "newFileContent", "rw");
-        assertEquals("newFileContent", resourceAccessService.read(userBob, userBobPass, "newFile"));
+        resourceAccessService.create(userBob, userBobPass, "root/folder/newFile", "newFileContent", 0);
+        assertEquals("newFileContent", resourceAccessService.read(userBob, userBobPass, "root/folder/newFile"));
     }
 }

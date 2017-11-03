@@ -6,14 +6,15 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ionutciuta24@gmail.com on 25.10.2017.
  */
 @Component
 public class Storage {
-    private static Map<String, String> users = new HashMap<>();
-    private static Map<String, Resource> resources = new HashMap<>();
+    private static Map<String, String> users = new ConcurrentHashMap<>();
+    private static Map<String, Resource> resources = new ConcurrentHashMap<>();
 
     public boolean isUser(String user) {
         return users.containsKey(user);
