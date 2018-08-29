@@ -128,13 +128,19 @@ public class ResourceAccessService {
             throw new ResourceInConflict();
         } else {
             InsertionPoint insertionPoint = resourceService.findParent(name, resource);
-            Resource newNode = resourceService.createResourceFromPath(
-                    insertionPoint.chain,
-                    content,
-                    insertionPoint.hook.permission,
-                    user
-            );
-            insertionPoint.hook.content.add(newNode);
+            Folder hook = insertionPoint.hook;
+
+            if(hook.owner.equals(user) || hook.permission.contains(Resource.Permission.W)) {
+                Resource newNode = resourceService.createResourceFromPath(
+                        insertionPoint.chain,
+                        content,
+                        insertionPoint.hook.permission,
+                        user
+                );
+                insertionPoint.hook.content.add(newNode);
+            } else {
+                throw new ResourceOperationNotPermitted();
+            }
         }
     }
 }
