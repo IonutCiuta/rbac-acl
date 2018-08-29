@@ -16,4 +16,15 @@ public class Folder extends Resource {
     public Folder(String name, String permission) {
         super(name, Type.FOLDER, permission, "");
     }
+
+    @Override
+    public String toString() {
+        return "Folder{" +
+                "content=" + content +
+                ", name='" + name + '\'' +
+                ", type=" + type +
+                ", permission='" + permission + '\'' +
+                ", owner='" + owner + '\'' +
+                '}';
+    }
 }

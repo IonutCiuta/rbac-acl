@@ -15,4 +15,14 @@ public class File extends Resource {
         super(name, Type.FILE, permission, "");
         this.content = content;
     }
+
+    @Override
+    public String toString() {
+        return "File{" +
+                "name='" + name + '\'' +
+                ", type=" + type +
+                ", permission='" + permission + '\'' +
+                ", owner='" + owner + '\'' +
+                '}';
+    }
 }

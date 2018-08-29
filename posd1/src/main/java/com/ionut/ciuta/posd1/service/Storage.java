@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class Storage {
     private Map<String, String> users = new ConcurrentHashMap<>();
+
     private Map<String, Resource> resources = new ConcurrentHashMap<>();
 
     public boolean isUser(String user) {
@@ -53,5 +54,13 @@ public class Storage {
 
         resources.put(bob, new Folder(bob, Resource.Permission.RW, bob));
         resources.put(alice, new Folder(alice, Resource.Permission.RW, alice));
+    }
+
+    public Map<String, String> getUsers() {
+        return users;
+    }
+
+    public Map<String, Resource> getResources() {
+        return resources;
     }
 }
