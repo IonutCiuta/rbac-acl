@@ -1,5 +1,7 @@
 package com.ionut.ciuta.posd1.ut;
 
+import com.ionut.ciuta.posd1.model.sql.User;
+import com.ionut.ciuta.posd1.repository.UserRepository;
 import com.ionut.ciuta.posd1.service.AuthService;
 import com.ionut.ciuta.posd1.service.Storage;
 import org.junit.Before;
@@ -23,7 +25,7 @@ public class AuthServiceTest {
     private AuthService authService;
 
     @Mock
-    private Storage storage;
+    private UserRepository userRepository;
 
     @Before
     public void setUp() throws Exception {
@@ -32,38 +34,20 @@ public class AuthServiceTest {
 
     @Test
     public void isAuthenticatedShouldPass() throws Exception {
-        when(storage.isUser(user)).thenReturn(true);
-        when(storage.getPass(user)).thenReturn(pass);
+        when(userRepository.findByName(user)).thenReturn(new User(user, pass));
 
         assertTrue(authService.isAuthenticated(user, pass));
     }
 
     @Test
-    public void isAuthenticatedShouldFail() throws Exception {
-        when(storage.isUser(user)).thenReturn(true);
-        when(storage.getPass(user)).thenReturn("wrongPass");
-
+    public void isAuthenticatedShouldFailForWrongPass() throws Exception {
+        when(userRepository.findByName(user)).thenReturn(new User(user, "wrongPass"));
         assertFalse(authService.isAuthenticated(user, pass));
     }
 
     @Test
-    public void createUserShouldSucceed() throws Exception {
-        when(storage.isUser(user)).thenReturn(false);
-
-        assertTrue(authService.createUser(user, pass));
-    }
-
-    @Test
-    public void createUserShouldFailWhenUserExists() throws Exception {
-        when(storage.isUser(user)).thenReturn(true);
-
-        assertFalse(authService.createUser(user, pass));
-    }
-
-    @Test
-    public void createUserShouldFailWhenInvalidPass() throws Exception {
-        when(storage.isUser(user)).thenReturn(false);
-
-        assertFalse(authService.createUser(user, ""));
+    public void isAuthenticatedShouldFailForNonExistingUser() throws Exception {
+        when(userRepository.findByName(user)).thenReturn(null);
+        assertFalse(authService.isAuthenticated(user, pass));
     }
 }

@@ -12,21 +12,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
     @Autowired
-    private Storage storage;
-
-    @Autowired
     private UserRepository userRepository;
 
     public boolean isAuthenticated(String user, String pass) {
-        return storage.isUser(user) && pass.equals(storage.getPass(user));
-    }
-
-    public boolean createUser(String user, String pass) {
-        if(!storage.isUser(user) && pass != null && !pass.isEmpty()) {
-            storage.addUser(user, pass);
-            return true;
-        }
-
-        return false;
+        User dbUser = userRepository.findByName(user);
+        return dbUser != null && dbUser.getName().equals(user) && dbUser.getPass().equals(pass);
     }
 }
