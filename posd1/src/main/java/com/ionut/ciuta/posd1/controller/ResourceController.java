@@ -96,7 +96,7 @@ public class ResourceController {
         }
     }
 
-    @PostMapping("sci/hw/resource/{user}/role")
+    @PostMapping("sci/hw/resource/{user}/create_role")
     @ResponseBody
     public ResponseEntity<Message> createRole(@PathVariable String user,
                                               @RequestBody String pass,
@@ -110,11 +110,11 @@ public class ResourceController {
         }
     }
 
-    @PostMapping("sci/hw/resource/{user}/{role}/rights")
+    @PostMapping("sci/hw/resource/{user}/role_rights")
     @ResponseBody
     public ResponseEntity<Message> changeRoleRights(@PathVariable String user,
                                                     @RequestBody String pass,
-                                                    @PathVariable String role,
+                                                    @RequestParam String role,
                                                     @RequestParam String rights) {
         try {
             managementService.changeRights(user, pass, role, rights);
@@ -125,11 +125,11 @@ public class ResourceController {
         }
     }
 
-    @PostMapping("sci/hw/resource/{user}/{role}/assign")
+    @PostMapping("sci/hw/resource/{user}/assign_role")
     @ResponseBody
     public ResponseEntity<Message> assignRole(@PathVariable String user,
                                               @RequestBody String pass,
-                                              @PathVariable String role,
+                                              @RequestParam String role,
                                               @RequestParam String assignee) {
         try {
             managementService.assignRole(user, pass, assignee, role);
@@ -140,7 +140,7 @@ public class ResourceController {
         }
     }
 
-    @PostMapping("sci/hw/resource/{user}/add")
+    @PostMapping("sci/hw/resource/{user}/add_role")
     @ResponseBody
     public ResponseEntity<Message> addRole(@PathVariable String user,
                                            @RequestBody String pass,
