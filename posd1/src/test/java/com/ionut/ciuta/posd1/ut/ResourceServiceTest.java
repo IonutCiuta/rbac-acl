@@ -1,7 +1,6 @@
 package com.ionut.ciuta.posd1.ut;
 
 import com.ionut.ciuta.posd1.model.*;
-import com.ionut.ciuta.posd1.service.ResourceBuilder;
 import com.ionut.ciuta.posd1.service.ResourceService;
 import com.ionut.ciuta.posd1.service.Storage;
 
@@ -37,9 +36,6 @@ public class ResourceServiceTest {
 
     @Mock
     private Storage storage;
-
-    @Mock
-    private ResourceBuilder resourceBuilder;
 
     @Before
     public void setUp() throws Exception {

@@ -1,11 +1,13 @@
 package com.ionut.ciuta.posd1.service;
 
+import com.ionut.ciuta.posd1.Values;
 import com.ionut.ciuta.posd1.model.Folder;
 import com.ionut.ciuta.posd1.model.Permission;
 import com.ionut.ciuta.posd1.model.Resource;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,10 +26,6 @@ public class Storage {
 
     public String getPass(String user) {
         return users.get(user);
-    }
-
-    public boolean isKnownUser(String user, String pass) {
-        return users.containsKey(user) && pass.equals(users.get(user));
     }
 
     public void addUser(String user, String pass) {
@@ -53,8 +51,13 @@ public class Storage {
         users.put(bob, bob);
         users.put(alice, alice);
 
-        resources.put(bob, new Folder(bob, Permission.NONE, bob));
-        resources.put(alice, new Folder(alice, Permission.NONE, alice));
+        Map<String, String> aliceAcl = new HashMap<>();
+        aliceAcl.put(alice, Values.OWNER);
+        resources.put(alice, new Folder(alice, Permission.NONE, alice, aliceAcl));
+
+        Map<String, String> bobAcl = new HashMap<>();
+        aliceAcl.put(bob, Values.OWNER);
+        resources.put(bob, new Folder(bob, Permission.NONE, bob, bobAcl));
     }
 
     public Map<String, String> getUsers() {

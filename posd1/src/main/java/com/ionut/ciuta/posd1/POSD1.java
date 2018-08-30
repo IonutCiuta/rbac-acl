@@ -1,6 +1,9 @@
 package com.ionut.ciuta.posd1;
 
+import com.ionut.ciuta.posd1.model.Permission;
+import com.ionut.ciuta.posd1.model.sql.Role;
 import com.ionut.ciuta.posd1.model.sql.User;
+import com.ionut.ciuta.posd1.repository.RoleRepository;
 import com.ionut.ciuta.posd1.repository.UserRepository;
 import com.ionut.ciuta.posd1.service.Storage;
 import org.slf4j.Logger;
@@ -21,6 +24,9 @@ public class POSD1 {
 	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
+	private RoleRepository roleRepository;
+
 	public static void main(String[] args) {
 		SpringApplication.run(POSD1.class, args);
 	}
@@ -36,5 +42,9 @@ public class POSD1 {
 		userRepository.save(new User("root", "root"));
 		userRepository.save(new User("alice", "alice"));
 		userRepository.save(new User("bob", "bob"));
+	}
+
+	private void setupRoles() {
+		roleRepository.save(new Role("owner", Permission.RW));
 	}
 }

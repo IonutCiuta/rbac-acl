@@ -21,9 +21,6 @@ public class ResourceService {
     @Autowired
     private Storage storage;
 
-    @Autowired
-    private ResourceBuilder resourceBuilder;
-
     public boolean exists(String name) {
         List<String> path = getPath(name);
         Resource resource = storage.getResource(path.get(0));
