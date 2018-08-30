@@ -1,5 +1,6 @@
 package com.ionut.ciuta.posd1.service;
 
+import com.ionut.ciuta.posd1.exception.ResourceOperationNotPermitted;
 import com.ionut.ciuta.posd1.model.sql.User;
 import com.ionut.ciuta.posd1.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +28,5 @@ public class AuthService {
         }
 
         return false;
-    }
-
-    public boolean isRoot(String user, String pass) {
-        User dbUser = userRepository.findByName("root");
-        return dbUser.getName().equals(user) && dbUser.getPass().equals(pass);
     }
 }

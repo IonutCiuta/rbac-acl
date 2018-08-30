@@ -29,10 +29,12 @@ public class POSD1 {
 	public void onStart() {
 		log.info("Storage users: {}", storage.getUsers());
 		log.info("Storage resources: {}", storage.getResources());
-		setupRootUser();
+		setupUsers();
 	}
 
-	private void setupRootUser() {
+	private void setupUsers() {
 		userRepository.save(new User("root", "root"));
+		userRepository.save(new User("alice", "alice"));
+		userRepository.save(new User("bob", "bob"));
 	}
 }
