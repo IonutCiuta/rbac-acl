@@ -1,4 +1,4 @@
-package com.ionut.ciuta.posd1;
+package com.ionut.ciuta.posd1.ut;
 
 import com.ionut.ciuta.posd1.exception.ResourceNotFound;
 import com.ionut.ciuta.posd1.exception.ResourceOperationNotPermitted;
@@ -125,7 +125,7 @@ public class ResourceAccessServiceTest {
         when(authService.isAuthenticated(any(), any())).thenReturn(true);
         when(resourceService.find(any())).thenReturn(folder);
 
-        assertEquals(userBob.concat("/ ").concat(userAliceFile).concat(" "), resourceAccessService.read(userBob, userBobPass, userAlice));
+        assertEquals(userBob.concat("/ ").concat(userAliceFile).concat(""), resourceAccessService.read(userBob, userBobPass, userAlice));
     }
 
     @Test

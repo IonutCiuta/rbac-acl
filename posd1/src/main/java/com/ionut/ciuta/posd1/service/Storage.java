@@ -52,8 +52,8 @@ public class Storage {
         users.put(bob, bob);
         users.put(alice, alice);
 
-        resources.put(bob, new Folder(bob, Resource.Permission.RW, bob));
-        resources.put(alice, new Folder(alice, Resource.Permission.RW, alice));
+        resources.put(bob, new Folder(bob, Resource.Permission.NONE, bob));
+        resources.put(alice, new Folder(alice, Resource.Permission.NONE, alice));
     }
 
     public Map<String, String> getUsers() {

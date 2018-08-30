@@ -43,6 +43,17 @@ app.controller('AppController', ['$scope', '$http', function($scope, $http) {
         });
     }
 
+    $scope.cleanup = function() {
+         $scope.operation = ""
+         $scope.username = ""
+         $scope.password = ""
+         $scope.name = ""
+         $scope.type = ""
+         $scope.permission = ""
+         $scope.content = ""
+         console.log("Cleanup complete!")
+    }
+
     function getOperationPath() {
         var root = 'http://localhost:8080/sci/hw/resource/' + $scope.username;
         var path = ['/create', '/read', '/write', '/rights'];

@@ -1,4 +1,4 @@
-package com.ionut.ciuta.posd1;
+package com.ionut.ciuta.posd1.ut;
 
 import com.ionut.ciuta.posd1.model.File;
 import com.ionut.ciuta.posd1.model.Folder;
@@ -32,7 +32,7 @@ public class ResourceServiceTest {
     private final String root = "user";
     private final String folder = "folder";
     private final String file = "file.ext";
-    private final String name = "user/folder/file.ext";
+    private final String name = "/user/folder/file.ext";
     private final String content = "fileContent";
 
     @InjectMocks
@@ -50,11 +50,21 @@ public class ResourceServiceTest {
     }
 
     @Test
-    public void getPathShouldReturnValidList() throws Exception {
-        List<String> path = resourceService.getPath(name);
-        assertTrue(path.get(0).equals(root));
-        assertTrue(path.get(1).equals(folder));
-        assertTrue(path.get(2).equals(file));
+    public void getPathShouldReturnValidListForResourceWithoutStartSlash() throws Exception {
+        List<String> path = resourceService.getPath("alice/folder/file/");
+        assertEquals(3, path.size());
+        assertEquals("alice", path.get(0));
+        assertEquals("folder", path.get(1));
+        assertEquals("file", path.get(2));
+    }
+
+    @Test
+    public void getPathShouldReturnValidListForResourceWithStartSlash() throws Exception {
+        List<String> path = resourceService.getPath("/alice/folder/file/");
+        assertEquals(3, path.size());
+        assertEquals("alice", path.get(0));
+        assertEquals("folder", path.get(1));
+        assertEquals("file", path.get(2));
     }
 
     @Test

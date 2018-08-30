@@ -82,7 +82,11 @@ public class ResourceService {
 
 
     public List<String> getPath(String name) {
-        return new ArrayList<>(Arrays.asList(name.split("/")));
+        return new ArrayList<>(Arrays.asList(name
+                .replace('/', ' ')
+                .trim()
+                .split(" ")
+        ));
     }
 
     public InsertionPoint findParent(String file, Resource rootFolder) {

@@ -81,7 +81,7 @@ public class ResourceAccessService {
         folder.content.forEach(r -> {
             switch (r.type) {
                 case Resource.Type.FILE:
-                    sb.append(((File)r).content);
+                    sb.append(((File)r).name);
                     break;
 
                 case Resource.Type.FOLDER:
@@ -92,7 +92,7 @@ public class ResourceAccessService {
             sb.append(" ");
         });
 
-        return sb.toString();
+        return sb.toString().trim();
     }
 
     public void changeRights(String user, String pass, String name, String permissions) {
@@ -128,13 +128,19 @@ public class ResourceAccessService {
             throw new ResourceInConflict();
         } else {
             InsertionPoint insertionPoint = resourceService.findParent(name, resource);
-            Resource newNode = resourceService.createResourceFromPath(
-                    insertionPoint.chain,
-                    content,
-                    insertionPoint.hook.permission,
-                    user
-            );
-            insertionPoint.hook.content.add(newNode);
+            Folder hook = insertionPoint.hook;
+
+            if(hook.owner.equals(user) || hook.permission.contains(Resource.Permission.W)) {
+                Resource newNode = resourceService.createResourceFromPath(
+                        insertionPoint.chain,
+                        content,
+                        insertionPoint.hook.permission,
+                        user
+                );
+                insertionPoint.hook.content.add(newNode);
+            } else {
+                throw new ResourceOperationNotPermitted();
+            }
         }
     }
 }
