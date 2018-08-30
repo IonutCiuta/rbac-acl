@@ -263,7 +263,7 @@ public class ResourceAccessServiceTest {
         when(resourceService.exists(any())).thenReturn(false);
         when(resourceService.find("root/folder/newFile")).thenReturn(folder);
         when(resourceService.findParent(any(), any())).thenReturn(insertionPoint);
-        when(resourceService.createResourceFromPath(any(), any(), any(), any())).thenReturn(new File("newFile", "rw", "newFileContent"));
+        when(resourceService.createResourceFromPath(any(), any(), any(), any(), any())).thenReturn(new File("newFile", "rw", "newFileContent"));
 
         resourceAccessService.create(userBob, userBobPass, "root/folder/newFile", "newFileContent");
         assertEquals("newFileContent", ((File)((Folder)folder.content.get(0)).content.get(0)).content);

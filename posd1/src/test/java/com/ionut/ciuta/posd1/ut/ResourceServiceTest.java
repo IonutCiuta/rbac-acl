@@ -6,6 +6,8 @@ import com.ionut.ciuta.posd1.service.Storage;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -218,7 +220,7 @@ public class ResourceServiceTest {
     public void createResourceFromPathShouldReturnValidResource() throws Exception {
         List<String> path = Arrays.asList(user, folder, file);
 
-        Folder result = (Folder) resourceService.createResourceFromPath(path, content, "", "");
+        Folder result = (Folder) resourceService.createResourceFromPath(path, content, "", "", Map.of());
         assertEquals(user, result.name);
         assertEquals(folder, result.content.get(0).name);
         assertEquals(file, ((Folder)result.content.get(0)).content.get(0).name);
@@ -229,7 +231,7 @@ public class ResourceServiceTest {
     public void createResourceFromSingleFolderPathShouldReturnValidResource() throws Exception {
         List<String> path = Arrays.asList(user);
 
-        Folder result = (Folder) resourceService.createResourceFromPath(path, null, "", "");
+        Folder result = (Folder) resourceService.createResourceFromPath(path, null, "", "", Map.of());
         assertEquals(user, result.name);
     }
 
@@ -237,7 +239,7 @@ public class ResourceServiceTest {
     public void createResourceFromDoubleFolderPathShouldReturnValidResource() throws Exception {
         List<String> path = Arrays.asList(user, user);
 
-        Folder result = (Folder) resourceService.createResourceFromPath(path, null, "", "");
+        Folder result = (Folder) resourceService.createResourceFromPath(path, null, "", "", Map.of());
         assertEquals(user, result.name);
         assertEquals(user, result.content.get(0).name);
     }

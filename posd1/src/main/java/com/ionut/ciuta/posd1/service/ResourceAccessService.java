@@ -122,12 +122,13 @@ public class ResourceAccessService {
             InsertionPoint insertionPoint = resourceService.findParent(name, resource);
             Folder hook = insertionPoint.hook;
 
-            if(hook.owner.equals(user) || hook.permission.contains(Permission.W)) {
+            if(authService.isOwner(user, hook) || authService.canWrite(user, hook)) {
                 Resource newNode = resourceService.createResourceFromPath(
                         insertionPoint.chain,
                         content,
                         insertionPoint.hook.permission,
-                        user
+                        user,
+                        hook.acl
                 );
                 insertionPoint.hook.content.add(newNode);
             } else {
