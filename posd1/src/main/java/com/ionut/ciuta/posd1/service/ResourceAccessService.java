@@ -87,6 +87,25 @@ public class ResourceAccessService {
         return sb.toString().trim();
     }
 
+    public void addRights(String user, String pass, String name, String role) {
+        if(!authService.isAuthenticated(user, pass)) {
+            throw new UnauthorizedUser();
+        }
+
+        Resource resource = resourceService.find(name);
+
+        if(resource == null) {
+            throw new ResourceNotFound();
+        }
+
+        if(authService.isOwner(user, resource)) {
+            //TODO: resource.acl.add(role);
+        } else {
+            throw new ResourceOperationNotPermitted();
+        }
+    }
+
+    @Deprecated(since = "HW2")
     public void changeRights(String user, String pass, String name, String permissions) {
         if(!authService.isAuthenticated(user, pass)) {
             throw new UnauthorizedUser();
