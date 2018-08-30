@@ -135,7 +135,22 @@ public class ResourceController {
             managementService.assignRole(user, pass, assignee, role);
             return ResponseEntity.ok().build();
         } catch (ExceptionWithStatusCode e) {
-            log.error("assignRile: {}, {}, {}, {}", user, pass, role, assignee);
+            log.error("assignRole: {}, {}, {}, {}", user, pass, role, assignee);
+            return new ResponseEntity<>(new Message(e.text), e.status);
+        }
+    }
+
+    @PostMapping("sci/hw/resource/{user}/add")
+    @ResponseBody
+    public ResponseEntity<Message> addRole(@PathVariable String user,
+                                           @RequestBody String pass,
+                                           @RequestParam String resource,
+                                           @RequestParam String role) {
+        try {
+            resourceAccessService.addRights(user, pass, resource, role);
+            return ResponseEntity.ok().build();
+        } catch (ExceptionWithStatusCode e) {
+            log.error("addRole: {}, {}, {}, {}", user, pass, resource, role);
             return new ResponseEntity<>(new Message(e.text), e.status);
         }
     }

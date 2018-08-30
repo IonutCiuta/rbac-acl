@@ -50,14 +50,8 @@ public class Storage {
 
         users.put(bob, bob);
         users.put(alice, alice);
-
-        Map<String, String> aliceAcl = new HashMap<>();
-        aliceAcl.put(alice, Values.OWNER);
-        resources.put(alice, new Folder(alice, Permission.NONE, alice, aliceAcl));
-
-        Map<String, String> bobAcl = new HashMap<>();
-        aliceAcl.put(bob, Values.OWNER);
-        resources.put(bob, new Folder(bob, Permission.NONE, bob, bobAcl));
+        resources.put(alice, new Folder(alice, alice));
+        resources.put(bob, new Folder(bob, bob));
     }
 
     public Map<String, String> getUsers() {

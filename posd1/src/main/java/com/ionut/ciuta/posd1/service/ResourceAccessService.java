@@ -99,12 +99,13 @@ public class ResourceAccessService {
         }
 
         if(authService.isOwner(user, resource)) {
-            //TODO: resource.acl.add(role);
+            resource.acl.add(role);
         } else {
             throw new ResourceOperationNotPermitted();
         }
     }
 
+    /* This has no real impact in the current implementation */
     @Deprecated(since = "HW2")
     public void changeRights(String user, String pass, String name, String permissions) {
         if(!authService.isAuthenticated(user, pass)) {
@@ -117,9 +118,7 @@ public class ResourceAccessService {
             throw new ResourceNotFound();
         }
 
-        if(resource.owner.equals(user) || resource.permission.contains(Permission.W)) {
-            resource.permission = permissions;
-        } else {
+        if(!resource.owner.equals(user)) {
             throw new ResourceOperationNotPermitted();
         }
     }
@@ -145,7 +144,6 @@ public class ResourceAccessService {
                 Resource newNode = resourceService.createResourceFromPath(
                         insertionPoint.chain,
                         content,
-                        insertionPoint.hook.permission,
                         user,
                         hook.acl
                 );

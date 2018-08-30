@@ -30,23 +30,21 @@ public class AuthService {
 
     public boolean isOwner(String user, Resource resource) {
         log.info("isOwner() {} {}", user, resource);
-        return user != null
-                && resource != null
-                && resource.acl != null
-                && Values.OWNER.equals(resource.acl.get(user));
+        return resource != null
+                && resource.owner != null
+                && resource.owner.equals(user);
     }
 
     public boolean hasPermission(String user, Resource resource, String permission) {
         log.info("hasPermission() {} {}", user, resource);
 
-        /* Sanity checks */
-        if(user == null || resource == null || resource.acl == null || !resource.acl.containsKey(user))
-            return false;
-
-        String aclRole = resource.acl.get(user);
-        /* If user is OWNER then it can read*/
-        if(Values.OWNER.equals(aclRole))
+        /* If owner, user can do anything with resource */
+        if(isOwner(user, resource))
             return true;
+
+        /* Sanity checks */
+        if(user == null || resource == null || resource.acl == null)
+            return false;
 
         User dbUser = userRepository.findByName(user);
         log.info("hasPermission(): dbUser -> {}", dbUser);
@@ -55,12 +53,19 @@ public class AuthService {
         if(dbUser == null || dbUser.getRoles() == null)
             return false;
 
-        /* Count matches of aclRole and Db roles */
-        long count = dbUser.getRoles()
-                .stream()
-                .filter(role -> aclRole.equals(role.getName()) && role.getPermissions().contains(permission))
-                .count();
-        log.info("hasPermission() {} {} {}", user, resource.name, count > 0 ? "yes" : "no");
+        return isInAcl(dbUser, resource, permission);
+    }
+
+    private boolean isInAcl(User user, Resource resource, String permission) {
+        /* Handle negative cases */
+        if(user == null || user.getRoles() == null || resource.acl == null)
+            return false;
+
+        /* Count matching dbRole - acl roles */
+        long count = user.getRoles().stream().filter(dbRole ->
+                resource.acl.contains(dbRole.getName()) && dbRole.getPermissions().contains(permission)).count();
+
+        log.info("isInAcl() {} {} {} {}", count > 0 ? "yes" : "no", user, resource, permission);
         return count > 0;
     }
 

@@ -2,9 +2,10 @@ package com.ionut.ciuta.posd1.model;
 
 import com.ionut.ciuta.posd1.Values;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
+import java.util.Set;
 
 /**
  * ionutciuta24@gmail.com on 25.10.2017.
@@ -17,24 +18,19 @@ public abstract class Resource {
 
     public String name;
     public int type;
-    public String permission;
     public String owner;
-    //Access control list: user -> role
-    public Map<String, String> acl;
+    public Set<String> acl;
 
-    public Resource(String name, int type, String permission, String owner) {
+    public Resource(String name, int type, String owner) {
         this.name = name;
         this.type = type;
-        this.permission = permission;
         this.owner = owner;
-        this.acl = new HashMap<>();
-        acl.put(owner, Values.OWNER);
+        this.acl = new HashSet<>();
     }
 
-    public Resource(String name, int type, String permission, String owner, Map<String, String> acl) {
+    public Resource(String name, int type, String owner, Set<String> acl) {
         this.name = name;
         this.type = type;
-        this.permission = permission;
         this.owner = owner;
         this.acl = acl;
     }
@@ -53,12 +49,10 @@ public abstract class Resource {
 
     @Override
     public String toString() {
-        return "Resource{" +
-                "name='" + name + '\'' +
-                ", type=" + type +
-                ", permission='" + permission + '\'' +
-                ", owner='" + owner + '\'' +
-                ", acl=" + acl +
-                '}';
+        return "Resource: " +
+                "name  -> "  + name  + '\n' +
+                "type  -> "  + type  + '\n' +
+                "owner -> "  + owner + '\n' +
+                "acl   -> "  + acl   + '\n';
     }
 }
