@@ -1,5 +1,7 @@
 package com.ionut.ciuta.posd1.service;
 
+import com.ionut.ciuta.posd1.model.sql.User;
+import com.ionut.ciuta.posd1.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +12,9 @@ import org.springframework.stereotype.Service;
 public class AuthService {
     @Autowired
     private Storage storage;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public boolean isAuthenticated(String user, String pass) {
         return storage.isUser(user) && pass.equals(storage.getPass(user));
@@ -22,5 +27,10 @@ public class AuthService {
         }
 
         return false;
+    }
+
+    public boolean isRoot(String user, String pass) {
+        User dbUser = userRepository.findByName("root");
+        return dbUser.getName().equals(user) && dbUser.getPass().equals(pass);
     }
 }
