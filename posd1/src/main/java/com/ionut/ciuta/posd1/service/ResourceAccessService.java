@@ -4,10 +4,7 @@ import com.ionut.ciuta.posd1.exception.ResourceInConflict;
 import com.ionut.ciuta.posd1.exception.ResourceNotFound;
 import com.ionut.ciuta.posd1.exception.ResourceOperationNotPermitted;
 import com.ionut.ciuta.posd1.exception.UnauthorizedUser;
-import com.ionut.ciuta.posd1.model.File;
-import com.ionut.ciuta.posd1.model.Folder;
-import com.ionut.ciuta.posd1.model.InsertionPoint;
-import com.ionut.ciuta.posd1.model.Resource;
+import com.ionut.ciuta.posd1.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,15 +27,10 @@ public class ResourceAccessService {
             throw new ResourceNotFound();
         }
 
-        if(resource.owner.equals(user)) {
+        if(authService.isOwner(user, resource) || authService.canRead(user, resource)) {
             return getContent(resource);
         } else {
-            if(resource.permission.equals(Resource.Permission.R) ||
-                    resource.permission.equals(Resource.Permission.RW)) {
-                return getContent(resource);
-            } else {
-                throw new ResourceOperationNotPermitted();
-            }
+            throw new ResourceOperationNotPermitted();
         }
     }
 
@@ -55,8 +47,8 @@ public class ResourceAccessService {
 
         File file = (File)resource;
 
-        if(file.owner.equals(user) || file.permission.contains(Resource.Permission.W)) {
-           file.content = newContent;
+        if(authService.isOwner(user, file) || authService.canWrite(user, file)) {
+            file.content = newContent;
         } else {
             throw new ResourceOperationNotPermitted();
         }
@@ -95,6 +87,26 @@ public class ResourceAccessService {
         return sb.toString().trim();
     }
 
+    public void addRights(String user, String pass, String name, String role) {
+        if(!authService.isAuthenticated(user, pass)) {
+            throw new UnauthorizedUser();
+        }
+
+        Resource resource = resourceService.find(name);
+
+        if(resource == null) {
+            throw new ResourceNotFound();
+        }
+
+        if(authService.isOwner(user, resource)) {
+            resource.acl.add(role);
+        } else {
+            throw new ResourceOperationNotPermitted();
+        }
+    }
+
+    /* This has no real impact in the current implementation */
+    @Deprecated(since = "HW2")
     public void changeRights(String user, String pass, String name, String permissions) {
         if(!authService.isAuthenticated(user, pass)) {
             throw new UnauthorizedUser();
@@ -106,9 +118,7 @@ public class ResourceAccessService {
             throw new ResourceNotFound();
         }
 
-        if(resource.owner.equals(user) || resource.permission.contains(Resource.Permission.W)) {
-            resource.permission = permissions;
-        } else {
+        if(!resource.owner.equals(user)) {
             throw new ResourceOperationNotPermitted();
         }
     }
@@ -130,12 +140,12 @@ public class ResourceAccessService {
             InsertionPoint insertionPoint = resourceService.findParent(name, resource);
             Folder hook = insertionPoint.hook;
 
-            if(hook.owner.equals(user) || hook.permission.contains(Resource.Permission.W)) {
+            if(authService.isOwner(user, hook) || authService.canWrite(user, hook)) {
                 Resource newNode = resourceService.createResourceFromPath(
                         insertionPoint.chain,
                         content,
-                        insertionPoint.hook.permission,
-                        user
+                        user,
+                        hook.acl
                 );
                 insertionPoint.hook.content.add(newNode);
             } else {

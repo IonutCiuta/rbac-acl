@@ -21,9 +21,6 @@ public class ResourceService {
     @Autowired
     private Storage storage;
 
-    @Autowired
-    private ResourceBuilder resourceBuilder;
-
     public boolean exists(String name) {
         List<String> path = getPath(name);
         Resource resource = storage.getResource(path.get(0));
@@ -116,7 +113,7 @@ public class ResourceService {
         return new InsertionPoint(parent, segments.subList(i, segments.size()));
     }
 
-    public Resource createResourceFromPath(List<String> path, String content, String rights, String owner) {
+    public Resource createResourceFromPath(List<String> path, String content, String owner, Set<String> acl) {
         Resource hook = null;
         Resource resource = null;
         int type = (content == null || content.isEmpty()) ? Resource.Type.FOLDER : Resource.Type.FILE;
@@ -127,14 +124,14 @@ public class ResourceService {
 
         boolean withHook = false;
         if (path.size() > 1) {
-            hook = new Folder(path.get(0), rights, owner);
+            hook = new Folder(path.get(0), owner, acl);
             resource = hook;
             withHook = true;
         }
 
         int i = withHook ? 1 : 0;
         for (; i < path.size() - 1; i++) {
-            Folder newFolder = new Folder(path.get(i), rights, owner);
+            Folder newFolder = new Folder(path.get(i), owner, acl);
             if (resource != null) {
                 ((Folder) resource).content.add(newFolder);
             }
@@ -143,9 +140,9 @@ public class ResourceService {
 
         Resource newResource;
         if (type == Resource.Type.FOLDER) {
-            newResource = new Folder(path.get(i), rights, owner);
+            newResource = new Folder(path.get(i), owner, acl);
         } else {
-            newResource = new File(path.get(i), rights, content, owner);
+            newResource = new File(path.get(i), content, owner, acl);
         }
 
         if (hook == null) {

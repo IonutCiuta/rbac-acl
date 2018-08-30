@@ -1,15 +1,14 @@
 package com.ionut.ciuta.posd1.ut;
 
-import com.ionut.ciuta.posd1.model.File;
-import com.ionut.ciuta.posd1.model.Folder;
-import com.ionut.ciuta.posd1.model.InsertionPoint;
-import com.ionut.ciuta.posd1.model.Resource;
-import com.ionut.ciuta.posd1.service.ResourceBuilder;
+import com.ionut.ciuta.posd1.model.*;
 import com.ionut.ciuta.posd1.service.ResourceService;
 import com.ionut.ciuta.posd1.service.Storage;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -40,9 +39,6 @@ public class ResourceServiceTest {
 
     @Mock
     private Storage storage;
-
-    @Mock
-    private ResourceBuilder resourceBuilder;
 
     @Before
     public void setUp() throws Exception {
@@ -198,8 +194,8 @@ public class ResourceServiceTest {
 
     @Test
     public void findParentShouldReturnParentFolder() throws Exception {
-        Folder rootFolder = new Folder(user, Resource.Permission.RW, user);
-        Folder childFolder = new Folder(folder, Resource.Permission.RW, user);
+        Folder rootFolder = new Folder(user, user);
+        Folder childFolder = new Folder(folder, user);
         rootFolder.content.add(childFolder);
 
         InsertionPoint insertionPoint = resourceService.findParent(name, rootFolder);
@@ -210,8 +206,8 @@ public class ResourceServiceTest {
 
     @Test
     public void findParentShouldSecondParentFolder() throws Exception {
-        Folder rootFolder = new Folder(user, Resource.Permission.RW, user);
-        Folder childFolder = new Folder(user, Resource.Permission.RW, user);
+        Folder rootFolder = new Folder(user, user);
+        Folder childFolder = new Folder(user, user);
         rootFolder.content.add(childFolder);
 
         InsertionPoint insertionPoint = resourceService.findParent("user/user/test/file", rootFolder);
@@ -225,7 +221,7 @@ public class ResourceServiceTest {
     public void createResourceFromPathShouldReturnValidResource() throws Exception {
         List<String> path = Arrays.asList(user, folder, file);
 
-        Folder result = (Folder) resourceService.createResourceFromPath(path, content, "", "");
+        Folder result = (Folder) resourceService.createResourceFromPath(path, content, "", Set.of());
         assertEquals(user, result.name);
         assertEquals(folder, result.content.get(0).name);
         assertEquals(file, ((Folder)result.content.get(0)).content.get(0).name);
@@ -236,7 +232,7 @@ public class ResourceServiceTest {
     public void createResourceFromSingleFolderPathShouldReturnValidResource() throws Exception {
         List<String> path = Arrays.asList(user);
 
-        Folder result = (Folder) resourceService.createResourceFromPath(path, null, "", "");
+        Folder result = (Folder) resourceService.createResourceFromPath(path, null, "", Set.of());
         assertEquals(user, result.name);
     }
 
@@ -244,7 +240,7 @@ public class ResourceServiceTest {
     public void createResourceFromDoubleFolderPathShouldReturnValidResource() throws Exception {
         List<String> path = Arrays.asList(user, user);
 
-        Folder result = (Folder) resourceService.createResourceFromPath(path, null, "", "");
+        Folder result = (Folder) resourceService.createResourceFromPath(path, null, "", Set.of());
         assertEquals(user, result.name);
         assertEquals(user, result.content.get(0).name);
     }
