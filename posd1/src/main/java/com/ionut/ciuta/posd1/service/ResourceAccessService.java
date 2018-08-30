@@ -27,15 +27,10 @@ public class ResourceAccessService {
             throw new ResourceNotFound();
         }
 
-        if(resource.owner.equals(user)) {
+        if(authService.isOwner(user, resource) || authService.canRead(user, resource)) {
             return getContent(resource);
         } else {
-            if(resource.permission.equals(Permission.R) ||
-                    resource.permission.equals(Permission.RW)) {
-                return getContent(resource);
-            } else {
-                throw new ResourceOperationNotPermitted();
-            }
+            throw new ResourceOperationNotPermitted();
         }
     }
 
@@ -52,8 +47,8 @@ public class ResourceAccessService {
 
         File file = (File)resource;
 
-        if(file.owner.equals(user) || file.permission.contains(Permission.W)) {
-           file.content = newContent;
+        if(authService.isOwner(user, file) || authService.canWrite(user, file)) {
+            file.content = newContent;
         } else {
             throw new ResourceOperationNotPermitted();
         }

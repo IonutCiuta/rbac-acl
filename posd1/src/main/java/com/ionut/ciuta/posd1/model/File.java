@@ -26,10 +26,12 @@ public class File extends Resource {
     @Override
     public String toString() {
         return "File{" +
-                "name='" + name + '\'' +
+                "content='" + content + '\'' +
+                ", name='" + name + '\'' +
                 ", type=" + type +
                 ", permission='" + permission + '\'' +
                 ", owner='" + owner + '\'' +
+                ", acl=" + acl +
                 '}';
     }
 }

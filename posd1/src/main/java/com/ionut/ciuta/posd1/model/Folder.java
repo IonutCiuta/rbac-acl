@@ -30,6 +30,7 @@ public class Folder extends Resource {
                 ", type=" + type +
                 ", permission='" + permission + '\'' +
                 ", owner='" + owner + '\'' +
+                ", acl=" + acl +
                 '}';
     }
 }

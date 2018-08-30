@@ -50,4 +50,15 @@ public abstract class Resource {
     public boolean isOfType(int type) {
         return this.type == type;
     }
+
+    @Override
+    public String toString() {
+        return "Resource{" +
+                "name='" + name + '\'' +
+                ", type=" + type +
+                ", permission='" + permission + '\'' +
+                ", owner='" + owner + '\'' +
+                ", acl=" + acl +
+                '}';
+    }
 }
