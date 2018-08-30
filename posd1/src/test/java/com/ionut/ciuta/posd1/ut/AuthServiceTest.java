@@ -1,4 +1,4 @@
-package com.ionut.ciuta.posd1;
+package com.ionut.ciuta.posd1.ut;
 
 import com.ionut.ciuta.posd1.service.AuthService;
 import com.ionut.ciuta.posd1.service.Storage;

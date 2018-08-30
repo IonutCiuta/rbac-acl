@@ -1,4 +1,4 @@
-package com.ionut.ciuta.posd1;
+package com.ionut.ciuta.posd1.ut;
 
 import com.ionut.ciuta.posd1.model.File;
 import com.ionut.ciuta.posd1.model.Folder;
