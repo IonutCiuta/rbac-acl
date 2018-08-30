@@ -1,9 +1,6 @@
 package com.ionut.ciuta.posd1.ut;
 
-import com.ionut.ciuta.posd1.model.File;
-import com.ionut.ciuta.posd1.model.Folder;
-import com.ionut.ciuta.posd1.model.InsertionPoint;
-import com.ionut.ciuta.posd1.model.Resource;
+import com.ionut.ciuta.posd1.model.*;
 import com.ionut.ciuta.posd1.service.ResourceBuilder;
 import com.ionut.ciuta.posd1.service.ResourceService;
 import com.ionut.ciuta.posd1.service.Storage;
@@ -198,8 +195,8 @@ public class ResourceServiceTest {
 
     @Test
     public void findParentShouldReturnParentFolder() throws Exception {
-        Folder rootFolder = new Folder(user, Resource.Permission.RW, user);
-        Folder childFolder = new Folder(folder, Resource.Permission.RW, user);
+        Folder rootFolder = new Folder(user, Permission.RW, user);
+        Folder childFolder = new Folder(folder, Permission.RW, user);
         rootFolder.content.add(childFolder);
 
         InsertionPoint insertionPoint = resourceService.findParent(name, rootFolder);
@@ -210,8 +207,8 @@ public class ResourceServiceTest {
 
     @Test
     public void findParentShouldSecondParentFolder() throws Exception {
-        Folder rootFolder = new Folder(user, Resource.Permission.RW, user);
-        Folder childFolder = new Folder(user, Resource.Permission.RW, user);
+        Folder rootFolder = new Folder(user, Permission.RW, user);
+        Folder childFolder = new Folder(user, Permission.RW, user);
         rootFolder.content.add(childFolder);
 
         InsertionPoint insertionPoint = resourceService.findParent("user/user/test/file", rootFolder);

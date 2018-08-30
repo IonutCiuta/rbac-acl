@@ -1,6 +1,7 @@
 package com.ionut.ciuta.posd1.service;
 
 import com.ionut.ciuta.posd1.model.Folder;
+import com.ionut.ciuta.posd1.model.Permission;
 import com.ionut.ciuta.posd1.model.Resource;
 import org.springframework.stereotype.Component;
 
@@ -52,8 +53,8 @@ public class Storage {
         users.put(bob, bob);
         users.put(alice, alice);
 
-        resources.put(bob, new Folder(bob, Resource.Permission.NONE, bob));
-        resources.put(alice, new Folder(alice, Resource.Permission.NONE, alice));
+        resources.put(bob, new Folder(bob, Permission.NONE, bob));
+        resources.put(alice, new Folder(alice, Permission.NONE, alice));
     }
 
     public Map<String, String> getUsers() {

@@ -3,10 +3,7 @@ package com.ionut.ciuta.posd1.ut;
 import com.ionut.ciuta.posd1.exception.ResourceNotFound;
 import com.ionut.ciuta.posd1.exception.ResourceOperationNotPermitted;
 import com.ionut.ciuta.posd1.exception.UnauthorizedUser;
-import com.ionut.ciuta.posd1.model.File;
-import com.ionut.ciuta.posd1.model.Folder;
-import com.ionut.ciuta.posd1.model.InsertionPoint;
-import com.ionut.ciuta.posd1.model.Resource;
+import com.ionut.ciuta.posd1.model.*;
 import com.ionut.ciuta.posd1.service.AuthService;
 import com.ionut.ciuta.posd1.service.ResourceAccessService;
 import com.ionut.ciuta.posd1.service.ResourceService;
@@ -84,7 +81,7 @@ public class ResourceAccessServiceTest {
 
     @Test(expected = ResourceOperationNotPermitted.class)
     public void readFolderShouldFailForInsufficientPermissions() throws Exception {
-        Folder folder = new Folder(userAlice, Resource.Permission.W, userAlice);
+        Folder folder = new Folder(userAlice, Permission.W, userAlice);
 
         when(authService.isAuthenticated(any(), any())).thenReturn(true);
         when(resourceService.find(any())).thenReturn(folder);
@@ -95,7 +92,7 @@ public class ResourceAccessServiceTest {
     @Test(expected = ResourceOperationNotPermitted.class)
     public void readFileShouldFailForInsufficienPermissions() throws Exception {
         Folder folder = new Folder(userAlice, "", userAlice);
-        File file = new File(userAliceFile, Resource.Permission.W, "", userAlice);
+        File file = new File(userAliceFile, Permission.W, "", userAlice);
         folder.content.add(file);
 
         when(authService.isAuthenticated(any(), any())).thenReturn(true);
@@ -106,7 +103,7 @@ public class ResourceAccessServiceTest {
 
     @Test
     public void readEmptyFolderShouldPassForReadPermissions() throws Exception {
-        Folder folder = new Folder(userAlice, Resource.Permission.R, userAlice);
+        Folder folder = new Folder(userAlice, Permission.R, userAlice);
 
         when(authService.isAuthenticated(any(), any())).thenReturn(true);
         when(resourceService.find(any())).thenReturn(folder);
@@ -116,9 +113,9 @@ public class ResourceAccessServiceTest {
 
     @Test
     public void readFolderShouldPassForReadPermissions() throws Exception {
-        Folder folder = new Folder(userAlice, Resource.Permission.R, userAlice);
-        Folder subfolder = new Folder(userBob, Resource.Permission.R, userAlice);
-        File file = new File(userAliceFile, Resource.Permission.R, userAliceFile, userAlice);
+        Folder folder = new Folder(userAlice, Permission.R, userAlice);
+        Folder subfolder = new Folder(userBob, Permission.R, userAlice);
+        File file = new File(userAliceFile, Permission.R, userAliceFile, userAlice);
         folder.content.add(subfolder);
         folder.content.add(file);
 
@@ -131,7 +128,7 @@ public class ResourceAccessServiceTest {
     @Test
     public void readFileShouldPassForReadPermissions() throws Exception {
         Folder folder = new Folder(userAlice, "", userAlice);
-        File file = new File(userAliceFile, Resource.Permission.R, userAliceFile, userAlice);
+        File file = new File(userAliceFile, Permission.R, userAliceFile, userAlice);
         folder.content.add(file);
 
         when(authService.isAuthenticated(any(), any())).thenReturn(true);
@@ -165,7 +162,7 @@ public class ResourceAccessServiceTest {
 
     @Test(expected = ResourceOperationNotPermitted.class)
     public void writeShouldFailForNoPermissions() throws Exception {
-        File file = new File(userAlice, Resource.Permission.R, userAliceFile, userAlice);
+        File file = new File(userAlice, Permission.R, userAliceFile, userAlice);
 
         when(authService.isAuthenticated(any(), any())).thenReturn(true);
         when(resourceService.find(any())).thenReturn(file);
@@ -175,7 +172,7 @@ public class ResourceAccessServiceTest {
 
     @Test
     public void writeShouldPassForWritePermission() throws Exception {
-        File file = new File(userAlice, Resource.Permission.RW, userAliceFile, userAlice);
+        File file = new File(userAlice, Permission.RW, userAliceFile, userAlice);
 
         when(authService.isAuthenticated(any(), any())).thenReturn(true);
         when(resourceService.find(any())).thenReturn(file);
@@ -186,7 +183,7 @@ public class ResourceAccessServiceTest {
 
     @Test
     public void writeShouldPassForUserFile() throws Exception {
-        File file = new File(userBob, Resource.Permission.W, userBobFile, userBob);
+        File file = new File(userBob, Permission.W, userBobFile, userBob);
 
         when(authService.isAuthenticated(any(), any())).thenReturn(true);
         when(resourceService.find(any())).thenReturn(file);
@@ -212,30 +209,30 @@ public class ResourceAccessServiceTest {
 
     @Test(expected = ResourceOperationNotPermitted.class)
     public void changeRightsShouldFailForNoPermissions() throws Exception {
-        File file = new File(userAliceFile, Resource.Permission.NONE, userAliceFile, userAlice);
+        File file = new File(userAliceFile, Permission.NONE, userAliceFile, userAlice);
 
         when(authService.isAuthenticated(any(), any())).thenReturn(true);
         when(resourceService.find(any())).thenReturn(file);
 
-        resourceAccessService.changeRights(userBob, userBobPass, userAliceFile, Resource.Permission.R);
+        resourceAccessService.changeRights(userBob, userBobPass, userAliceFile, Permission.R);
     }
 
     @Test
     public void changeRightsShouldPassForUserFile() throws Exception {
-        File file = new File(userAliceFile, Resource.Permission.W, userAliceFile, userAlice);
+        File file = new File(userAliceFile, Permission.W, userAliceFile, userAlice);
 
         when(authService.isAuthenticated(any(), any())).thenReturn(true);
         when(resourceService.find(any())).thenReturn(file);
 
-        resourceAccessService.changeRights(userBob, userBobPass, userAliceFile, Resource.Permission.RW);
+        resourceAccessService.changeRights(userBob, userBobPass, userAliceFile, Permission.RW);
         assertEquals(userAliceFile, resourceAccessService.read(userBob, userBobPass, userAliceFile));
     }
 
     @Test
     @Ignore
     public void createShouldPassForTheRightPermissionsAndPropeNewFile() throws Exception {
-        Folder folder = new Folder("root", Resource.Permission.R, userBob);
-        Folder subfolder = new Folder("folder", Resource.Permission.R, userBob);
+        Folder folder = new Folder("root", Permission.R, userBob);
+        Folder subfolder = new Folder("folder", Permission.R, userBob);
         folder.content.add(subfolder);
 
         InsertionPoint insertionPoint = new InsertionPoint(subfolder, Collections.singletonList("newFile"));

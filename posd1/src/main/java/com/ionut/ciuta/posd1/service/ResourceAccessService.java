@@ -4,10 +4,7 @@ import com.ionut.ciuta.posd1.exception.ResourceInConflict;
 import com.ionut.ciuta.posd1.exception.ResourceNotFound;
 import com.ionut.ciuta.posd1.exception.ResourceOperationNotPermitted;
 import com.ionut.ciuta.posd1.exception.UnauthorizedUser;
-import com.ionut.ciuta.posd1.model.File;
-import com.ionut.ciuta.posd1.model.Folder;
-import com.ionut.ciuta.posd1.model.InsertionPoint;
-import com.ionut.ciuta.posd1.model.Resource;
+import com.ionut.ciuta.posd1.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +30,8 @@ public class ResourceAccessService {
         if(resource.owner.equals(user)) {
             return getContent(resource);
         } else {
-            if(resource.permission.equals(Resource.Permission.R) ||
-                    resource.permission.equals(Resource.Permission.RW)) {
+            if(resource.permission.equals(Permission.R) ||
+                    resource.permission.equals(Permission.RW)) {
                 return getContent(resource);
             } else {
                 throw new ResourceOperationNotPermitted();
@@ -55,7 +52,7 @@ public class ResourceAccessService {
 
         File file = (File)resource;
 
-        if(file.owner.equals(user) || file.permission.contains(Resource.Permission.W)) {
+        if(file.owner.equals(user) || file.permission.contains(Permission.W)) {
            file.content = newContent;
         } else {
             throw new ResourceOperationNotPermitted();
@@ -106,7 +103,7 @@ public class ResourceAccessService {
             throw new ResourceNotFound();
         }
 
-        if(resource.owner.equals(user) || resource.permission.contains(Resource.Permission.W)) {
+        if(resource.owner.equals(user) || resource.permission.contains(Permission.W)) {
             resource.permission = permissions;
         } else {
             throw new ResourceOperationNotPermitted();
@@ -130,7 +127,7 @@ public class ResourceAccessService {
             InsertionPoint insertionPoint = resourceService.findParent(name, resource);
             Folder hook = insertionPoint.hook;
 
-            if(hook.owner.equals(user) || hook.permission.contains(Resource.Permission.W)) {
+            if(hook.owner.equals(user) || hook.permission.contains(Permission.W)) {
                 Resource newNode = resourceService.createResourceFromPath(
                         insertionPoint.chain,
                         content,
